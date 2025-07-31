@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
+# Custom CSS for better styling with Brazil-inspired colors
 st.markdown("""
 <style>
     .main-header {
@@ -118,25 +118,79 @@ st.markdown("""
         transform: translateY(-5px);
     }
     
-    /* Enhanced styling for dataframe */
-    .dataframe tbody tr td {
-        padding: 8px 12px !important;
+    /* Enhanced dataframe styling */
+    .dataframe {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     
+    .dataframe tbody tr {
+        background-color: #fff8e1 !important; /* Light Brazil-inspired yellow */
+        transition: background-color 0.3s ease;
+    }
+    
+    .dataframe tbody tr:nth-child(even) {
+        background-color: #f3e5f5 !important; /* Light Brazil-inspired purple */
+    }
+    
+    .dataframe tbody tr:hover {
+        background-color: #e8f5e8 !important; /* Light green on hover */
+        transform: scale(1.02);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    
+    .dataframe tbody tr td {
+        padding: 12px 15px !important;
+        border-bottom: 1px solid #e0e0e0 !important;
+        font-weight: 500;
+        color: #2c3e50;
+    }
+    
+    .dataframe thead tr th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        font-weight: bold !important;
+        padding: 15px !important;
+        text-align: center !important;
+        border: none !important;
+    }
+    
+    /* Test Case specific styling */
     .success-cell {
-        background-color: #28a745 !important;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
         color: white !important;
         font-weight: bold !important;
         text-align: center !important;
-        border-radius: 5px !important;
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+        box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3) !important;
+        border: 2px solid #28a745 !important;
     }
     
     .failure-cell {
-        background-color: #dc3545 !important;
+        background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%) !important;
         color: white !important;
         font-weight: bold !important;
         text-align: center !important;
-        border-radius: 5px !important;
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+        box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3) !important;
+        border: 2px solid #dc3545 !important;
+    }
+    
+    /* Brazil flag inspired alternating rows */
+    .brazil-green {
+        background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%) !important;
+    }
+    
+    .brazil-yellow {
+        background: linear-gradient(135deg, #fff8e1 0%, #fff176 100%) !important;
+    }
+    
+    .brazil-blue {
+        background: linear-gradient(135deg, #e3f2fd 0%, #90caf9 100%) !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -424,17 +478,26 @@ def run_duplicate_validation(selected_db, selected_schema, load_type, selected_l
             return pd.DataFrame([])
 
 def style_dataframe(df):
-    """Apply beautiful styling to dataframes with enhanced color coding"""
+    """Apply beautiful Brazil-inspired styling to dataframes with enhanced color coding"""
     def highlight_test_case(val):
         if val == "SUCCESS":
-            return 'background-color: #28a745; color: white; font-weight: bold; text-align: center; border-radius: 5px; padding: 5px;'
+            return 'background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; font-weight: bold; text-align: center; border-radius: 8px; padding: 8px 12px; box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3); border: 2px solid #28a745;'
         elif val == "FAILURE":
-            return 'background-color: #dc3545; color: white; font-weight: bold; text-align: center; border-radius: 5px; padding: 5px;'
+            return 'background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%); color: white; font-weight: bold; text-align: center; border-radius: 8px; padding: 8px 12px; box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3); border: 2px solid #dc3545;'
         return ''
     
+    def highlight_alternating_rows(row):
+        """Apply Brazil-inspired alternating row colors"""
+        colors = ['background-color: #fff8e1;', 'background-color: #f3e5f5;', 'background-color: #e8f5e8;']
+        base_color = colors[row.name % 3]  # Cycle through 3 colors
+        return [base_color] * len(row)
+    
     if 'Test Case' in df.columns:
-        return df.style.applymap(highlight_test_case, subset=['Test Case'])
-    return df
+        styled = df.style.apply(highlight_alternating_rows, axis=1)
+        styled = styled.applymap(highlight_test_case, subset=['Test Case'])
+        return styled
+    else:
+        return df.style.apply(highlight_alternating_rows, axis=1)
 
 def create_colored_csv(df, filename):
     """Create a CSV with color indicators for SUCCESS/FAILURE"""
@@ -514,7 +577,7 @@ def display_enhanced_results(df, validation_type, timestamp):
     
     # Display styled dataframe
     styled_df = style_dataframe(df)
-    st.dataframe(styled_df, use_container_width=True)
+    st.dataframe(styled_df, use_container_width=True, height=400)
     
     # Create download options
     col1, col2 = st.columns(2)
@@ -551,14 +614,16 @@ def display_enhanced_results(df, validation_type, timestamp):
         with col1:
             if not success_cases.empty:
                 st.success(f"✅ **{len(success_cases)} Tests Passed**")
-                if st.expander("View Successful Tests"):
-                    st.dataframe(success_cases[['Test Case'] + [col for col in success_cases.columns if col != 'Test Case']], use_container_width=True)
+                with st.expander("View Successful Tests"):
+                    success_styled = style_dataframe(success_cases)
+                    st.dataframe(success_styled, use_container_width=True)
         
         with col2:
             if not failure_cases.empty:
                 st.error(f"❌ **{len(failure_cases)} Tests Failed**")
-                if st.expander("View Failed Tests"):
-                    st.dataframe(failure_cases[['Test Case'] + [col for col in failure_cases.columns if col != 'Test Case']], use_container_width=True)
+                with st.expander("View Failed Tests"):
+                    failure_styled = style_dataframe(failure_cases)
+                    st.dataframe(failure_styled, use_container_width=True)
 
 # Initialize session state
 if 'load_group' not in st.session_state:
