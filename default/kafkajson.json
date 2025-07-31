@@ -1,0 +1,11 @@
+{
+  "flow" : {
+    "createdTimestamp" : 1753955157084,
+    "description" : "testing",
+    "identifier" : "kafkajson",
+    "lastModifiedTimestamp" : 1753955157084,
+    "name" : "kafka_json",
+    "versionCount" : 0
+  },
+  "latest" : false
+}
