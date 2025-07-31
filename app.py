@@ -6,6 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 import time
+import io
 
 # Page configuration
 st.set_page_config(
@@ -50,21 +51,23 @@ st.markdown("""
     }
     
     .success-card {
-        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         padding: 1rem;
         border-radius: 10px;
         color: white;
         text-align: center;
         margin: 0.5rem 0;
+        font-weight: bold;
     }
     
     .failure-card {
-        background: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
+        background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);
         padding: 1rem;
         border-radius: 10px;
         color: white;
         text-align: center;
         margin: 0.5rem 0;
+        font-weight: bold;
     }
     
     .info-box {
@@ -113,6 +116,27 @@ st.markdown("""
     
     .nav-card:hover {
         transform: translateY(-5px);
+    }
+    
+    /* Enhanced styling for dataframe */
+    .dataframe tbody tr td {
+        padding: 8px 12px !important;
+    }
+    
+    .success-cell {
+        background-color: #28a745 !important;
+        color: white !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        border-radius: 5px !important;
+    }
+    
+    .failure-cell {
+        background-color: #dc3545 !important;
+        color: white !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        border-radius: 5px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -400,17 +424,37 @@ def run_duplicate_validation(selected_db, selected_schema, load_type, selected_l
             return pd.DataFrame([])
 
 def style_dataframe(df):
-    """Apply beautiful styling to dataframes"""
+    """Apply beautiful styling to dataframes with enhanced color coding"""
     def highlight_test_case(val):
         if val == "SUCCESS":
-            return 'background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; font-weight: bold;'
+            return 'background-color: #28a745; color: white; font-weight: bold; text-align: center; border-radius: 5px; padding: 5px;'
         elif val == "FAILURE":
-            return 'background: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%); color: white; font-weight: bold;'
+            return 'background-color: #dc3545; color: white; font-weight: bold; text-align: center; border-radius: 5px; padding: 5px;'
         return ''
     
     if 'Test Case' in df.columns:
         return df.style.applymap(highlight_test_case, subset=['Test Case'])
     return df
+
+def create_colored_csv(df, filename):
+    """Create a CSV with color indicators for SUCCESS/FAILURE"""
+    if 'Test Case' in df.columns:
+        # Create a copy of the dataframe
+        csv_df = df.copy()
+        
+        # Add color indicators to the Test Case column
+        csv_df['Test Case Status'] = csv_df['Test Case'].apply(
+            lambda x: f"🟢 {x}" if x == "SUCCESS" else f"🔴 {x}" if x == "FAILURE" else x
+        )
+        
+        # Reorder columns to put the colored status at the end
+        cols = [col for col in csv_df.columns if col != 'Test Case Status']
+        cols.append('Test Case Status')
+        csv_df = csv_df[cols]
+        
+        return csv_df.to_csv(index=False).encode('utf-8')
+    
+    return df.to_csv(index=False).encode('utf-8')
 
 def display_summary_metrics(df):
     """Display summary metrics with beautiful cards"""
@@ -449,12 +493,72 @@ def display_summary_metrics(df):
         """, unsafe_allow_html=True)
     
     with col4:
+        color = "#28a745" if success_rate >= 80 else "#ffc107" if success_rate >= 60 else "#dc3545"
         st.markdown(f"""
-        <div class="metric-card">
+        <div class="metric-card" style="background: linear-gradient(135deg, {color} 0%, {color}dd 100%);">
             <h3>🎯 Success Rate</h3>
             <h2>{success_rate:.1f}%</h2>
         </div>
         """, unsafe_allow_html=True)
+
+def display_enhanced_results(df, validation_type, timestamp):
+    """Display results with enhanced styling and download options"""
+    if df.empty:
+        st.warning("⚠️ No results to display")
+        return
+    
+    st.markdown('<h3 class="sub-header">📈 Validation Results</h3>', unsafe_allow_html=True)
+    display_summary_metrics(df)
+    
+    st.markdown("### 📋 Detailed Results")
+    
+    # Display styled dataframe
+    styled_df = style_dataframe(df)
+    st.dataframe(styled_df, use_container_width=True)
+    
+    # Create download options
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Standard CSV download
+        csv_data = df.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            "📥 Download Standard CSV", 
+            data=csv_data, 
+            file_name=f"{validation_type}_validation_{timestamp}.csv", 
+            mime="text/csv"
+        )
+    
+    with col2:
+        # Enhanced CSV with color indicators
+        colored_csv_data = create_colored_csv(df, f"{validation_type}_validation_{timestamp}")
+        st.download_button(
+            "🎨 Download Enhanced CSV (with colors)", 
+            data=colored_csv_data, 
+            file_name=f"{validation_type}_validation_enhanced_{timestamp}.csv", 
+            mime="text/csv"
+        )
+    
+    # Display test case summary
+    if 'Test Case' in df.columns:
+        success_cases = df[df['Test Case'] == 'SUCCESS']
+        failure_cases = df[df['Test Case'] == 'FAILURE']
+        
+        st.markdown("### 📊 Test Case Summary")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if not success_cases.empty:
+                st.success(f"✅ **{len(success_cases)} Tests Passed**")
+                if st.expander("View Successful Tests"):
+                    st.dataframe(success_cases[['Test Case'] + [col for col in success_cases.columns if col != 'Test Case']], use_container_width=True)
+        
+        with col2:
+            if not failure_cases.empty:
+                st.error(f"❌ **{len(failure_cases)} Tests Failed**")
+                if st.expander("View Failed Tests"):
+                    st.dataframe(failure_cases[['Test Case'] + [col for col in failure_cases.columns if col != 'Test Case']], use_container_width=True)
 
 # Initialize session state
 if 'load_group' not in st.session_state:
@@ -569,16 +673,7 @@ elif page == "📊 Data Ingestion DQ":
             if dq_rule == "COUNT VALIDATION":
                 df = run_count_validation(selected_load_group, load_type_input.strip(), source_db_type, environment)
                 if not df.empty:
-                    st.markdown('<h3 class="sub-header">📈 Validation Results</h3>', unsafe_allow_html=True)
-                    display_summary_metrics(df)
-                    
-                    st.markdown("### 📋 Detailed Results")
-                    styled_df = style_dataframe(df)
-                    st.dataframe(styled_df, use_container_width=True)
-                    
-                    csv_data = df.to_csv(index=False).encode('utf-8')
-                    st.download_button("📥 Download Results", data=csv_data, 
-                                     file_name=f"count_validation_{timestamp}.csv", mime="text/csv")
+                    display_enhanced_results(df, "count", timestamp)
                 
             elif dq_rule == "DATA VALIDATION":
                 if not selected_schema:
@@ -586,16 +681,7 @@ elif page == "📊 Data Ingestion DQ":
                 else:
                     df = run_data_validation(selected_db, selected_schema, load_type_input.strip(), selected_load_group, environment)
                     if not df.empty:
-                        st.markdown('<h3 class="sub-header">📈 Validation Results</h3>', unsafe_allow_html=True)
-                        display_summary_metrics(df)
-                        
-                        st.markdown("### 📋 Detailed Results")
-                        styled_df = style_dataframe(df)
-                        st.dataframe(styled_df, use_container_width=True)
-                        
-                        csv_data = df.to_csv(index=False).encode('utf-8')
-                        st.download_button("📥 Download Results", data=csv_data,
-                                         file_name=f"data_validation_{timestamp}.csv", mime="text/csv")
+                        display_enhanced_results(df, "data", timestamp)
                 
             elif dq_rule == "DUPLICATE VALIDATION":
                 if not selected_schema:
@@ -603,16 +689,7 @@ elif page == "📊 Data Ingestion DQ":
                 else:
                     df = run_duplicate_validation(selected_db, selected_schema, load_type_input.strip(), selected_load_group, environment)
                     if not df.empty:
-                        st.markdown('<h3 class="sub-header">📈 Validation Results</h3>', unsafe_allow_html=True)
-                        display_summary_metrics(df)
-                        
-                        st.markdown("### 📋 Detailed Results")
-                        styled_df = style_dataframe(df)
-                        st.dataframe(styled_df, use_container_width=True)
-                        
-                        csv_data = df.to_csv(index=False).encode('utf-8')
-                        st.download_button("📥 Download Results", data=csv_data,
-                                         file_name=f"duplicate_validation_{timestamp}.csv", mime="text/csv")
+                        display_enhanced_results(df, "duplicate", timestamp)
 
 elif page == "🎭 Masking DQ":
     st.markdown('<h1 class="main-header">🎭 Data Masking Quality</h1>', unsafe_allow_html=True)
@@ -903,22 +980,7 @@ elif page == "🎭 Masking DQ":
                 
                 # Display results
                 results_df = pd.DataFrame(results_for_csv)
-                
-                st.markdown('<h3 class="sub-header">📈 Validation Results</h3>', unsafe_allow_html=True)
-                display_summary_metrics(results_df)
-                
-                st.markdown("### 📋 Detailed Results")
-                styled_df = style_dataframe(results_df)
-                st.dataframe(styled_df, use_container_width=True)
-                
-                # Download button
-                csv_bytes = results_df.to_csv(index=False).encode('utf-8')
-                st.download_button(
-                    label="📥 Download Validation Results",
-                    data=csv_bytes,
-                    file_name=f"masking_validation_results_{timestamp}.csv",
-                    mime="text/csv"
-                )
+                display_enhanced_results(results_df, "masking", timestamp)
 
 elif page == "🔐 Encryption DQ":
     st.markdown('<h1 class="main-header">🔐 Encryption Quality</h1>', unsafe_allow_html=True)
