@@ -50,21 +50,23 @@ st.markdown("""
     }
     
     .success-card {
-        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         padding: 1rem;
         border-radius: 10px;
         color: white;
         text-align: center;
         margin: 0.5rem 0;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
     }
     
     .failure-card {
-        background: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
+        background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
         padding: 1rem;
         border-radius: 10px;
         color: white;
         text-align: center;
         margin: 0.5rem 0;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
     }
     
     .info-box {
@@ -113,6 +115,67 @@ st.markdown("""
     
     .nav-card:hover {
         transform: translateY(-5px);
+    }
+    
+    /* Enhanced table styling with Brazilian colors */
+    .dataframe {
+        border-collapse: collapse;
+        margin: 1rem 0;
+        font-size: 0.9rem;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .dataframe th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 600;
+        padding: 1rem;
+        text-align: center;
+        border: none;
+    }
+    
+    .dataframe td {
+        padding: 0.8rem;
+        text-align: center;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    /* Brazilian light colors for alternating rows */
+    .dataframe tbody tr:nth-child(odd) {
+        background-color: #fff8e1; /* Light warm yellow */
+    }
+    
+    .dataframe tbody tr:nth-child(even) {
+        background-color: #e8f5e8; /* Light green */
+    }
+    
+    .dataframe tbody tr:hover {
+        background-color: #e3f2fd; /* Light blue on hover */
+        transform: scale(1.02);
+        transition: all 0.3s ease;
+    }
+    
+    /* Status-specific styling */
+    .status-success {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+        color: white !important;
+        font-weight: bold !important;
+        border-radius: 20px !important;
+        padding: 0.5rem 1rem !important;
+        margin: 0.2rem !important;
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3) !important;
+    }
+    
+    .status-failure {
+        background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%) !important;
+        color: white !important;
+        font-weight: bold !important;
+        border-radius: 20px !important;
+        padding: 0.5rem 1rem !important;
+        margin: 0.2rem !important;
+        box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3) !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -400,17 +463,64 @@ def run_duplicate_validation(selected_db, selected_schema, load_type, selected_l
             return pd.DataFrame([])
 
 def style_dataframe(df):
-    """Apply beautiful styling to dataframes"""
+    """Apply beautiful styling to dataframes with Brazilian colors and enhanced status styling"""
     def highlight_test_case(val):
         if val == "SUCCESS":
-            return 'background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; font-weight: bold;'
+            return 'background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; font-weight: bold; border-radius: 20px; padding: 0.5rem 1rem; text-align: center; box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);'
         elif val == "FAILURE":
-            return 'background: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%); color: white; font-weight: bold;'
+            return 'background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%); color: white; font-weight: bold; border-radius: 20px; padding: 0.5rem 1rem; text-align: center; box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);'
         return ''
     
+    def highlight_rows(row):
+        # Brazilian-inspired alternating colors
+        colors = ['background-color: #fff8e1;', 'background-color: #e8f5e8;']  # Light warm yellow and light green
+        return [colors[row.name % 2]] * len(row)
+    
     if 'Test Case' in df.columns:
-        return df.style.applymap(highlight_test_case, subset=['Test Case'])
-    return df
+        styled = df.style.apply(highlight_rows, axis=1).applymap(highlight_test_case, subset=['Test Case'])
+        return styled.set_table_styles([
+            {'selector': 'th', 'props': [
+                ('background', 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'),
+                ('color', 'white'),
+                ('font-weight', 'bold'),
+                ('text-align', 'center'),
+                ('padding', '1rem'),
+                ('border', 'none')
+            ]},
+            {'selector': 'td', 'props': [
+                ('text-align', 'center'),
+                ('padding', '0.8rem'),
+                ('border-bottom', '1px solid #e9ecef')
+            ]},
+            {'selector': 'table', 'props': [
+                ('border-collapse', 'collapse'),
+                ('border-radius', '10px'),
+                ('overflow', 'hidden'),
+                ('box-shadow', '0 4px 15px rgba(0,0,0,0.1)')
+            ]}
+        ])
+    else:
+        return df.style.apply(highlight_rows, axis=1).set_table_styles([
+            {'selector': 'th', 'props': [
+                ('background', 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'),
+                ('color', 'white'),
+                ('font-weight', 'bold'),
+                ('text-align', 'center'),
+                ('padding', '1rem'),
+                ('border', 'none')
+            ]},
+            {'selector': 'td', 'props': [
+                ('text-align', 'center'),
+                ('padding', '0.8rem'),
+                ('border-bottom', '1px solid #e9ecef')
+            ]},
+            {'selector': 'table', 'props': [
+                ('border-collapse', 'collapse'),
+                ('border-radius', '10px'),
+                ('overflow', 'hidden'),
+                ('box-shadow', '0 4px 15px rgba(0,0,0,0.1)')
+            ]}
+        ])
 
 def display_summary_metrics(df):
     """Display summary metrics with beautiful cards"""
