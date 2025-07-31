@@ -1033,16 +1033,366 @@ elif page == "🎭 Masking DQ":
 elif page == "🔐 Encryption DQ":
     st.markdown('<h1 class="main-header">🔐 Encryption Quality</h1>', unsafe_allow_html=True)
     
+    # Encryption DQ functions
+    @st.cache_data(ttl=300)
+    def get_encryption_databases(env_prefix):
+        """Get databases for encryption validation"""
+        db_prefix = f"{env_prefix}_"
+        db_query = f"""
+            SELECT DATABASE_NAME 
+            FROM INFORMATION_SCHEMA.DATABASES 
+            WHERE DATABASE_NAME LIKE '{db_prefix}%'
+            AND DATABASE_NAME NOT LIKE '%_ENCRYPT'
+            AND DATABASE_NAME NOT LIKE '%_MASKED%'
+        """
+        try:
+            rows = session.sql(db_query).collect()
+            return [row[0] for row in rows]
+        except:
+            return []
+
+    @st.cache_data(ttl=300)
+    def get_encryption_schemas(database):
+        """Get schemas for encryption validation"""
+        schema_query = f"SELECT SCHEMA_NAME FROM {database}.INFORMATION_SCHEMA.SCHEMATA"
+        try:
+            rows = session.sql(schema_query).collect()
+            return [row[0] for row in rows]
+        except:
+            return []
+
+    @st.cache_data(ttl=300)
+    def get_encryption_classification_owners(env):
+        """Get classification owners for encryption validation"""
+        owner_query = f"""
+            SELECT DISTINCT CLASSIFICATION_OWNER
+            FROM {env}_DB_MANAGER.MASKING.CLASSIFICATION_DETAILS
+        """
+        try:
+            rows = session.sql(owner_query).collect()
+            return [row[0] for row in rows]
+        except:
+            return []
+
+    def get_tables_and_columns_from_classification(env, selected_database, selected_schema, classification_owner):
+        """Get tables and columns from classification details based on environment mapping"""
+        try:
+            # Convert selected database to PROD for classification lookup
+            prod_database = selected_database.replace("DEV_", "PROD_").replace("QA_", "PROD_").replace("UAT_", "PROD_")
+            
+            classification_query = f"""
+                SELECT DISTINCT 
+                    "TABLE" as table_name,
+                    "COLUMN" as column_name
+                FROM {env}_DB_MANAGER.MASKING.CLASSIFICATION_DETAILS
+                WHERE "DATABASE" = '{prod_database}'
+                AND "SCHEMA" = '{selected_schema}'
+                AND CLASSIFICATION_OWNER = '{classification_owner}'
+                ORDER BY "TABLE", "COLUMN"
+            """
+            
+            rows = session.sql(classification_query).collect()
+            return [(row['TABLE_NAME'], row['COLUMN_NAME']) for row in rows]
+        except Exception as e:
+            st.error(f"Error fetching classification data: {e}")
+            return []
+
+    def compare_column_data(original_db, encrypted_db, schema, table_name, column_name, sample_size=100):
+        """Compare data between original and encrypted columns"""
+        try:
+            # Get sample data from original database
+            original_query = f"""
+                SELECT {column_name}
+                FROM {original_db}.{schema}.{table_name}
+                WHERE {column_name} IS NOT NULL
+                LIMIT {sample_size}
+            """
+            
+            # Get sample data from encrypted database
+            encrypted_query = f"""
+                SELECT {column_name}
+                FROM {encrypted_db}.{schema}.{table_name}
+                WHERE {column_name} IS NOT NULL
+                LIMIT {sample_size}
+            """
+            
+            original_result = session.sql(original_query).collect()
+            encrypted_result = session.sql(encrypted_query).collect()
+            
+            if not original_result or not encrypted_result:
+                return False, "No data found in one or both databases", 0, 0
+            
+            # Extract values
+            original_values = [str(row[0]) for row in original_result if row[0] is not None]
+            encrypted_values = [str(row[0]) for row in encrypted_result if row[0] is not None]
+            
+            if not original_values or not encrypted_values:
+                return False, "No valid data to compare", 0, 0
+            
+            # Compare if data is different (encryption should make data different)
+            different_count = 0
+            min_length = min(len(original_values), len(encrypted_values))
+            
+            for i in range(min_length):
+                if original_values[i] != encrypted_values[i]:
+                    different_count += 1
+            
+            # Success if data is different (indicating encryption worked)
+            is_encrypted = different_count > 0
+            comparison_details = f"Compared {min_length} records, {different_count} different"
+            
+            return is_encrypted, comparison_details, len(original_values), len(encrypted_values)
+            
+        except Exception as e:
+            return False, f"Error comparing data: {str(e)}", 0, 0
+
+    def check_table_column_exists(database, schema, table_name, column_name):
+        """Check if table and column exist in database"""
+        try:
+            check_query = f"""
+                SELECT COUNT(*) as count
+                FROM {database}.INFORMATION_SCHEMA.COLUMNS
+                WHERE TABLE_SCHEMA = '{schema}'
+                AND TABLE_NAME = '{table_name}'
+                AND COLUMN_NAME = '{column_name}'
+            """
+            result = session.sql(check_query).collect()
+            return result[0]['COUNT'] > 0 if result else False
+        except:
+            return False
+
+    def run_encryption_data_validation(env, selected_database, selected_schema, classification_owner):
+        """Run encryption validation by comparing actual data between original and encrypted databases"""
+        with st.spinner("🔄 Running encryption data validation..."):
+            # Get encrypted database name
+            encrypt_database = f"{selected_database}_ENCRYPT"
+            
+            # Get tables and columns from classification
+            classification_data = get_tables_and_columns_from_classification(env, selected_database, selected_schema, classification_owner)
+            
+            if not classification_data:
+                st.warning("⚠️ No classification data found for the selected criteria.")
+                return pd.DataFrame([])
+
+            results = []
+            progress_bar = st.progress(0)
+            
+            for idx, (table_name, column_name) in enumerate(classification_data):
+                progress_bar.progress((idx + 1) / len(classification_data))
+                
+                # Check if table and column exist in both databases
+                original_exists = check_table_column_exists(selected_database, selected_schema, table_name, column_name)
+                encrypted_exists = check_table_column_exists(encrypt_database, selected_schema, table_name, column_name)
+                
+                if not original_exists or not encrypted_exists:
+                    test_case = "FAILURE"
+                    details = f"Column missing - Original: {'Yes' if original_exists else 'No'}, Encrypted: {'Yes' if encrypted_exists else 'No'}"
+                    original_count = encrypted_count = 0
+                else:
+                    # Compare actual data
+                    is_encrypted, comparison_details, original_count, encrypted_count = compare_column_data(
+                        selected_database, encrypt_database, selected_schema, table_name, column_name
+                    )
+                    
+                    if is_encrypted:
+                        test_case = "SUCCESS"
+                        details = f"Data encrypted successfully - {comparison_details}"
+                    else:
+                        test_case = "FAILURE"
+                        details = f"Data not encrypted or identical - {comparison_details}"
+                
+                results.append({
+                    "Environment": env,
+                    "Original Database": selected_database,
+                    "Encrypted Database": encrypt_database,
+                    "Schema": selected_schema,
+                    "Table": table_name,
+                    "Column": column_name,
+                    "Classification Owner": classification_owner,
+                    "Original Count": original_count,
+                    "Encrypted Count": encrypted_count,
+                    "Original Exists": "Yes" if original_exists else "No",
+                    "Encrypted Exists": "Yes" if encrypted_exists else "No",
+                    "Test Case": test_case,
+                    "Details": details
+                })
+
+            progress_bar.empty()
+            return pd.DataFrame(results)
+
+    def run_non_encryption_validation(env, selected_database, selected_schema, classification_owner):
+        """Run validation for columns that should NOT be encrypted"""
+        with st.spinner("🔄 Running non-encryption validation..."):
+            # Get encrypted database name
+            encrypt_database = f"{selected_database}_ENCRYPT"
+            
+            # Get all columns from the schema that are NOT in classification details
+            try:
+                # Get all columns in the schema
+                all_columns_query = f"""
+                    SELECT DISTINCT TABLE_NAME, COLUMN_NAME
+                    FROM {selected_database}.INFORMATION_SCHEMA.COLUMNS
+                    WHERE TABLE_SCHEMA = '{selected_schema}'
+                    AND TABLE_NAME NOT LIKE 'RAW_%'
+                    AND TABLE_NAME NOT LIKE 'VW_%'
+                    AND COLUMN_NAME NOT LIKE 'ROW_%'
+                    ORDER BY TABLE_NAME, COLUMN_NAME
+                """
+                
+                all_columns_result = session.sql(all_columns_query).collect()
+                all_columns = [(row['TABLE_NAME'], row['COLUMN_NAME']) for row in all_columns_result]
+                
+                # Get classified columns (these should be encrypted)
+                prod_database = selected_database.replace("DEV_", "PROD_").replace("QA_", "PROD_").replace("UAT_", "PROD_")
+                classified_columns_query = f"""
+                    SELECT DISTINCT "TABLE" as table_name, "COLUMN" as column_name
+                    FROM {env}_DB_MANAGER.MASKING.CLASSIFICATION_DETAILS
+                    WHERE "DATABASE" = '{prod_database}'
+                    AND "SCHEMA" = '{selected_schema}'
+                    AND CLASSIFICATION_OWNER = '{classification_owner}'
+                """
+                
+                classified_result = session.sql(classified_columns_query).collect()
+                classified_columns = set((row['TABLE_NAME'], row['COLUMN_NAME']) for row in classified_result)
+                
+                # Get non-classified columns (these should NOT be encrypted)
+                non_classified_columns = [col for col in all_columns if col not in classified_columns]
+                
+                if not non_classified_columns:
+                    st.info("ℹ️ All columns in this schema are classified for encryption.")
+                    return pd.DataFrame([])
+                
+                results = []
+                progress_bar = st.progress(0)
+                
+                for idx, (table_name, column_name) in enumerate(non_classified_columns):
+                    progress_bar.progress((idx + 1) / len(non_classified_columns))
+                    
+                    # Check if table and column exist in both databases
+                    original_exists = check_table_column_exists(selected_database, selected_schema, table_name, column_name)
+                    encrypted_exists = check_table_column_exists(encrypt_database, selected_schema, table_name, column_name)
+                    
+                    if not original_exists or not encrypted_exists:
+                        test_case = "FAILURE"
+                        details = f"Column missing - Original: {'Yes' if original_exists else 'No'}, Encrypted: {'Yes' if encrypted_exists else 'No'}"
+                        original_count = encrypted_count = 0
+                    else:
+                        # Compare actual data - for non-encrypted columns, data should be identical
+                        is_different, comparison_details, original_count, encrypted_count = compare_column_data(
+                            selected_database, encrypt_database, selected_schema, table_name, column_name
+                        )
+                        
+                        if not is_different:
+                            test_case = "SUCCESS"
+                            details = f"Data identical (not encrypted) - {comparison_details}"
+                        else:
+                            test_case = "FAILURE"
+                            details = f"Data unexpectedly different - {comparison_details}"
+                    
+                    results.append({
+                        "Environment": env,
+                        "Original Database": selected_database,
+                        "Encrypted Database": encrypt_database,
+                        "Schema": selected_schema,
+                        "Table": table_name,
+                        "Column": column_name,
+                        "Classification": "Not Required",
+                        "Original Count": original_count,
+                        "Encrypted Count": encrypted_count,
+                        "Original Exists": "Yes" if original_exists else "No",
+                        "Encrypted Exists": "Yes" if encrypted_exists else "No",
+                        "Test Case": test_case,
+                        "Details": details
+                    })
+
+                progress_bar.empty()
+                return pd.DataFrame(results)
+                
+            except Exception as e:
+                st.error(f"Error during non-encryption validation: {e}")
+                return pd.DataFrame([])
+
+    # UI Controls
+    st.markdown('<h3 class="sub-header">🎛️ Control Panel</h3>', unsafe_allow_html=True)
+    
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        encrypt_env = st.selectbox("🌍 Environment", ["DEV", "QA", "UAT", "PROD"], key="encrypt_env")
+    with col2:
+        encrypt_database_list = get_encryption_databases(encrypt_env)
+        encrypt_selected_database = st.selectbox("🏢 Database", encrypt_database_list, key="encrypt_db_select")
+    with col3:
+        encrypt_schema_list = get_encryption_schemas(encrypt_selected_database) if encrypt_selected_database else []
+        encrypt_selected_schema = st.selectbox("📁 Schema", encrypt_schema_list, key="encrypt_schema_select")
+    with col4:
+        encrypt_classification_owners = get_encryption_classification_owners(encrypt_env)
+        encrypt_classification_owner = st.selectbox("👤 Classification Owner", encrypt_classification_owners, key="encrypt_owner_select")
+
+    # Run validation automatically when all fields are selected
+    if all([encrypt_env, encrypt_selected_database, encrypt_selected_schema, encrypt_classification_owner]):
+        
+        # Two validation buttons
+        col_btn1, col_btn2 = st.columns(2)
+        
+        with col_btn1:
+            if st.button("🔐 Validate Encrypted Columns", type="primary", key="encrypt_validate"):
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                
+                df = run_encryption_data_validation(encrypt_env, encrypt_selected_database, encrypt_selected_schema, encrypt_classification_owner)
+                
+                if not df.empty:
+                    st.markdown('<h3 class="sub-header">🔐 Encrypted Columns Validation Results</h3>', unsafe_allow_html=True)
+                    display_summary_metrics(df)
+                    
+                    st.markdown("### 📋 Detailed Results")
+                    styled_df = style_dataframe(df)
+                    st.dataframe(styled_df, use_container_width=True)
+                    
+                    # Download button
+                    csv_bytes = df.to_csv(index=False).encode('utf-8')
+                    st.download_button(
+                        label="📥 Download Encryption Results",
+                        data=csv_bytes,
+                        file_name=f"encryption_validation_{timestamp}.csv",
+                        mime="text/csv"
+                    )
+                else:
+                    st.info("ℹ️ No encrypted columns found for validation.")
+        
+        with col_btn2:
+            if st.button("🔓 Validate Non-Encrypted Columns", type="secondary", key="non_encrypt_validate"):
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                
+                df = run_non_encryption_validation(encrypt_env, encrypt_selected_database, encrypt_selected_schema, encrypt_classification_owner)
+                
+                if not df.empty:
+                    st.markdown('<h3 class="sub-header">🔓 Non-Encrypted Columns Validation Results</h3>', unsafe_allow_html=True)
+                    display_summary_metrics(df)
+                    
+                    st.markdown("### 📋 Detailed Results")
+                    styled_df = style_dataframe(df)
+                    st.dataframe(styled_df, use_container_width=True)
+                    
+                    # Download button
+                    csv_bytes = df.to_csv(index=False).encode('utf-8')
+                    st.download_button(
+                        label="📥 Download Non-Encryption Results",
+                        data=csv_bytes,
+                        file_name=f"non_encryption_validation_{timestamp}.csv",
+                        mime="text/csv"
+                    )
+                else:
+                    st.info("ℹ️ All columns in this schema are classified for encryption.")
+    
+    # Information box
     st.markdown("""
     <div class="info-box">
-        <h3>🚧 Coming Soon</h3>
-        <p>Encryption data quality validations are currently under development. This module will include:</p>
-        <ul>
-            <li>🔒 Encryption status validation</li>
-            <li>🔑 Key management verification</li>
-            <li>🛡️ Security compliance checks</li>
-            <li>📊 Encryption performance metrics</li>
-        </ul>
+        <h3>📋 Encryption Validation Information</h3>
+        <p><strong>🔐 Encrypted Columns Validation:</strong> Compares actual data between original and encrypted databases for columns listed in classification details. SUCCESS means data is different (encrypted).</p>
+        <p><strong>🔓 Non-Encrypted Columns Validation:</strong> Validates that columns NOT in classification details remain unchanged. SUCCESS means data is identical (not encrypted).</p>
+        <p><strong>Database Mapping:</strong> Encrypted database name is formed by adding '_ENCRYPT' suffix to the selected database.</p>
+        <p><strong>Classification Mapping:</strong> Classification details are always stored with PROD database names and mapped to the selected environment.</p>
+        <p><strong>Data Comparison:</strong> Uses sample of 100 records to compare data between original and encrypted columns.</p>
     </div>
     """, unsafe_allow_html=True)
 
