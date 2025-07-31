@@ -1,0 +1,11 @@
+{
+  "flow" : {
+    "createdTimestamp" : 1753952692875,
+    "description" : "This Flow will store all SQL_SNOWFLAKE_CMS_DBO related ingestion parameters",
+    "identifier" : "SQLSNOWFLAKECMSDBO",
+    "lastModifiedTimestamp" : 1753952692875,
+    "name" : "SQL_SNOWFLAKE_CMS_DBO",
+    "versionCount" : 0
+  },
+  "latest" : false
+}
