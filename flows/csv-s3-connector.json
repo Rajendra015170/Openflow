@@ -730,7 +730,7 @@
             "penaltyDuration": "30 sec",
             "position": {"x": 440.0, "y": -120.0},
             "properties": {
-              "Number of Copies": "${literal(${allDelineatedValues(\"${files}\", ","):count()}):minus(1)}"
+              "Number of Copies": "${literal(${allDelineatedValues(\"${files}\", \",\"):count()}):minus(1)}"
             },
             "propertyDescriptors": {},
             "retriedRelationships": [],
