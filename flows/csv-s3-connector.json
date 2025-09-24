@@ -1,0 +1,1635 @@
+{
+  "externalControllerServices": {},
+  "flow": {
+    "createdTimestamp": 0,
+    "identifier": "csv-s3-connector",
+    "lastModifiedTimestamp": 0,
+    "name": "csv-s3-connector",
+    "versionCount": 0
+  },
+  "flowContents": {
+    "comments": "CSV S3 to Snowflake connector with schema inference",
+    "componentType": "PROCESS_GROUP",
+    "connections": [
+      {
+        "backPressureDataSizeThreshold": "1 GB",
+        "backPressureObjectThreshold": 10000,
+        "bends": [],
+        "componentType": "CONNECTION",
+        "destination": {
+          "comments": "Fetch CSV file from AWS S3 bucket.",
+          "groupId": "flow-contents-group",
+          "id": "77df7ee1-9a4b-3485-a99a-52a7b1b05a5b",
+          "name": "Fetch File From S3",
+          "type": "PROCESSOR"
+        },
+        "flowFileExpiration": "0 sec",
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "2b227ab7-562b-333d-b7f3-83832e56f1bc",
+        "labelIndex": 0,
+        "loadBalanceCompression": "DO_NOT_COMPRESS",
+        "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+        "name": "",
+        "partitioningAttribute": "",
+        "prioritizers": [],
+        "selectedRelationships": [
+          "success"
+        ],
+        "source": {
+          "groupId": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+          "id": "e7e58367-eb56-30bb-8621-0ab55f4ca48c",
+          "name": "Output File",
+          "type": "OUTPUT_PORT"
+        },
+        "zIndex": 32
+      },
+      {
+        "backPressureDataSizeThreshold": "1 GB",
+        "backPressureObjectThreshold": 10000,
+        "bends": [],
+        "componentType": "CONNECTION",
+        "destination": {
+          "groupId": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+          "id": "a2c8e5f5-2f1e-4c47-9e2b-8a1c3d0b99a2",
+          "name": "CSV File",
+          "type": "INPUT_PORT"
+        },
+        "flowFileExpiration": "0 sec",
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "ce52c921-1b99-4b55-9d9b-7a0c19f2f111",
+        "labelIndex": 0,
+        "loadBalanceCompression": "DO_NOT_COMPRESS",
+        "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+        "name": "",
+        "partitioningAttribute": "",
+        "prioritizers": [],
+        "selectedRelationships": [
+          "success"
+        ],
+        "source": {
+          "comments": "Fetch CSV file from AWS S3 bucket.",
+          "groupId": "flow-contents-group",
+          "id": "77df7ee1-9a4b-3485-a99a-52a7b1b05a5b",
+          "name": "Fetch File From S3",
+          "type": "PROCESSOR"
+        },
+        "zIndex": 27
+      },
+      {
+        "backPressureDataSizeThreshold": "1 GB",
+        "backPressureObjectThreshold": 10000,
+        "bends": [],
+        "componentType": "CONNECTION",
+        "destination": {
+          "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+          "id": "7c2d0f1b-0184-312d-8d80-c711e1469dc7",
+          "name": "CSV Data",
+          "type": "INPUT_PORT"
+        },
+        "flowFileExpiration": "0 sec",
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "71705e65-0ad9-3a11-96e6-07b72f4da9ea",
+        "labelIndex": 0,
+        "loadBalanceCompression": "DO_NOT_COMPRESS",
+        "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+        "name": "",
+        "partitioningAttribute": "",
+        "prioritizers": [],
+        "selectedRelationships": [
+          ""
+        ],
+        "source": {
+          "groupId": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+          "id": "d1a6ee4e-8e50-4a96-9fd9-4696d9e8803a",
+          "name": "Parsed CSV Data",
+          "type": "OUTPUT_PORT"
+        },
+        "zIndex": 35
+      },
+      {
+        "backPressureDataSizeThreshold": "1 GB",
+        "backPressureObjectThreshold": 10000,
+        "bends": [],
+        "componentType": "CONNECTION",
+        "destination": {
+          "comments": "Log failures",
+          "groupId": "flow-contents-group",
+          "id": "08c85e12-089e-359d-a6a3-dc7266d84e55",
+          "name": "Log Failure",
+          "type": "PROCESSOR"
+        },
+        "flowFileExpiration": "0 sec",
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "af9e6a3e-90f4-31fa-9cb7-c3b442788335",
+        "labelIndex": 0,
+        "loadBalanceCompression": "DO_NOT_COMPRESS",
+        "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+        "name": "",
+        "partitioningAttribute": "",
+        "prioritizers": [],
+        "selectedRelationships": [
+          "failure"
+        ],
+        "source": {
+          "comments": "Fetch CSV file from AWS S3 bucket.",
+          "groupId": "flow-contents-group",
+          "id": "77df7ee1-9a4b-3485-a99a-52a7b1b05a5b",
+          "name": "Fetch File From S3",
+          "type": "PROCESSOR"
+        },
+        "zIndex": 33
+      },
+      {
+        "backPressureDataSizeThreshold": "1 GB",
+        "backPressureObjectThreshold": 10000,
+        "bends": [],
+        "componentType": "CONNECTION",
+        "destination": {
+          "comments": "Log failures",
+          "groupId": "flow-contents-group",
+          "id": "08c85e12-089e-359d-a6a3-dc7266d84e55",
+          "name": "Log Failure",
+          "type": "PROCESSOR"
+        },
+        "flowFileExpiration": "0 sec",
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "f0cc4914-7e8e-39ac-a631-46bff2b6cba8",
+        "labelIndex": 0,
+        "loadBalanceCompression": "DO_NOT_COMPRESS",
+        "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+        "name": "",
+        "partitioningAttribute": "",
+        "prioritizers": [],
+        "selectedRelationships": [
+          ""
+        ],
+        "source": {
+          "groupId": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+          "id": "f3b51a0b-9a7a-48a4-b34b-7b337d867a22",
+          "name": "Failure",
+          "type": "OUTPUT_PORT"
+        },
+        "zIndex": 34
+      },
+      {
+        "backPressureDataSizeThreshold": "1 GB",
+        "backPressureObjectThreshold": 10000,
+        "bends": [],
+        "componentType": "CONNECTION",
+        "destination": {
+          "comments": "Log failures",
+          "groupId": "flow-contents-group",
+          "id": "08c85e12-089e-359d-a6a3-dc7266d84e55",
+          "name": "Log Failure",
+          "type": "PROCESSOR"
+        },
+        "flowFileExpiration": "0 sec",
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "1415cbd6-7520-3ba2-8339-7125cbce9fe4",
+        "labelIndex": 0,
+        "loadBalanceCompression": "DO_NOT_COMPRESS",
+        "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+        "name": "",
+        "partitioningAttribute": "",
+        "prioritizers": [],
+        "selectedRelationships": [
+          ""
+        ],
+        "source": {
+          "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+          "id": "64279d5e-68ce-3c1f-8859-a1eaf8bcda98",
+          "name": "Failure",
+          "type": "OUTPUT_PORT"
+        },
+        "zIndex": 30
+      },
+      {
+        "backPressureDataSizeThreshold": "1 GB",
+        "backPressureObjectThreshold": 10000,
+        "bends": [],
+        "componentType": "CONNECTION",
+        "destination": {
+          "groupId": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+          "id": "de9011f9-a14e-32e2-ba08-a0e34f3517bd",
+          "name": "Input File",
+          "type": "INPUT_PORT"
+        },
+        "flowFileExpiration": "0 sec",
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "ce3a722c-7875-3851-85b8-e0e42188f799",
+        "labelIndex": 0,
+        "loadBalanceCompression": "DO_NOT_COMPRESS",
+        "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+        "name": "",
+        "partitioningAttribute": "",
+        "prioritizers": [],
+        "selectedRelationships": [
+          "success"
+        ],
+        "source": {
+          "comments": "Generate flow file telling that data should be ingested. The file is generated based on configured schedule.",
+          "groupId": "flow-contents-group",
+          "id": "7d999c3f-6d93-3f0f-9b67-ae43990fab37",
+          "name": "Start Scheduled Ingestion",
+          "type": "PROCESSOR"
+        },
+        "zIndex": 31
+      }
+    ],
+    "controllerServices": [
+      {
+        "bulletinLevel": "WARN",
+        "bundle": {
+          "artifact": "runtime-snowflake-connection-service-nar",
+          "group": "com.snowflake.openflow.runtime",
+          "version": "2025.5.29.19"
+        },
+        "comments": "",
+        "componentType": "CONTROLLER_SERVICE",
+        "controllerServiceApis": [
+          {
+            "bundle": {
+              "artifact": "nifi-standard-services-api-nar",
+              "group": "org.apache.nifi",
+              "version": "2025.5.29.19"
+            },
+            "type": "org.apache.nifi.dbcp.DBCPService"
+          }
+        ],
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "1c249b1a-3267-3930-b7b9-fffa14a09538",
+        "name": "Snowflake Connection Service",
+        "properties": {
+          "Account": "#{Snowflake Account Identifier}",
+          "Warehouse": "#{Snowflake Warehouse}",
+          "User": "#{Snowflake Username}",
+          "Maximum Connections": "10",
+          "Maximum Lifetime": "30 minutes",
+          "Schema": "#{Destination Schema}",
+          "Private Key Service": "3551017f-aabe-33e3-a20d-c9ec6bb22f98",
+          "Connection Strategy": "STANDARD",
+          "Connection Timeout": "30 seconds",
+          "Role": "#{Snowflake Role}",
+          "Idle Timeout": "10 minutes",
+          "Authentication Strategy": "KEY_PAIR",
+          "Database Name": "#{Destination Database}"
+        },
+        "propertyDescriptors": {},
+        "scheduledState": "DISABLED",
+        "type": "com.snowflake.openflow.runtime.services.snowflake.SnowflakeConnectionService"
+      },
+      {
+        "bulletinLevel": "WARN",
+        "bundle": {
+          "artifact": "nifi-record-serialization-services-nar",
+          "group": "org.apache.nifi",
+          "version": "2025.5.29.19"
+        },
+        "comments": "",
+        "componentType": "CONTROLLER_SERVICE",
+        "controllerServiceApis": [
+          {
+            "bundle": {
+              "artifact": "nifi-standard-services-api-nar",
+              "group": "org.apache.nifi",
+              "version": "2025.5.29.19"
+            },
+            "type": "org.apache.nifi.serialization.RecordSetWriterFactory"
+          }
+        ],
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "220ab423-abac-3fd1-b897-c00f95f97df8",
+        "name": "Json Record Writer",
+        "properties": {
+          "Allow Scientific Notation": "false",
+          "compression-level": "1",
+          "Pretty Print JSON": "false",
+          "compression-format": "none",
+          "Schema Write Strategy": "full-schema-attribute",
+          "suppress-nulls": "never-suppress",
+          "output-grouping": "output-array",
+          "schema-name": "${schema.name}",
+          "schema-access-strategy": "inherit-record-schema",
+          "schema-text": "${avro.schema}"
+        },
+        "propertyDescriptors": {},
+        "scheduledState": "DISABLED",
+        "type": "org.apache.nifi.json.JsonRecordSetWriter"
+      },
+      {
+        "bulletinLevel": "WARN",
+        "bundle": {
+          "artifact": "nifi-key-service-nar",
+          "group": "org.apache.nifi",
+          "version": "2025.5.29.19"
+        },
+        "comments": "",
+        "componentType": "CONTROLLER_SERVICE",
+        "controllerServiceApis": [
+          {
+            "bundle": {
+              "artifact": "nifi-standard-services-api-nar",
+              "group": "org.apache.nifi",
+              "version": "2025.5.29.19"
+            },
+            "type": "org.apache.nifi.key.service.api.PrivateKeyService"
+          }
+        ],
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "3551017f-aabe-33e3-a20d-c9ec6bb22f98",
+        "name": "Snowflake Private Key Service",
+        "properties": {
+          "key-password": "#{Snowflake Private Key Password}",
+          "key": "#{Snowflake Private Key}"
+        },
+        "propertyDescriptors": {},
+        "scheduledState": "DISABLED",
+        "type": "org.apache.nifi.key.service.StandardPrivateKeyService"
+      },
+      {
+        "bulletinLevel": "WARN",
+        "bundle": {
+          "artifact": "runtime-snowflake-connection-service-nar",
+          "group": "com.snowflake.openflow.runtime",
+          "version": "2025.5.29.19"
+        },
+        "comments": "",
+        "componentType": "CONTROLLER_SERVICE",
+        "controllerServiceApis": [
+          {
+            "bundle": {
+              "artifact": "nifi-standard-services-api-nar",
+              "group": "org.apache.nifi",
+              "version": "2025.5.29.19"
+            },
+            "type": "org.apache.nifi.database.dialect.service.api.DatabaseDialectService"
+          }
+        ],
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "587cab01-7a4d-3bc8-9f21-d47b9e5b281b",
+        "name": "Snowflake Database Dialect Service",
+        "properties": {},
+        "propertyDescriptors": {},
+        "scheduledState": "DISABLED",
+        "type": "com.snowflake.openflow.runtime.services.snowflake.SnowflakeDatabaseDialectService"
+      },
+      {
+        "bulletinLevel": "WARN",
+        "bundle": {
+          "artifact": "nifi-record-serialization-services-nar",
+          "group": "org.apache.nifi",
+          "version": "2025.5.29.19"
+        },
+        "comments": "",
+        "componentType": "CONTROLLER_SERVICE",
+        "controllerServiceApis": [
+          {
+            "bundle": {
+              "artifact": "nifi-standard-services-api-nar",
+              "group": "org.apache.nifi",
+              "version": "2025.5.29.19"
+            },
+            "type": "org.apache.nifi.serialization.RecordReaderFactory"
+          }
+        ],
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "81f35f8e-cc4a-36e0-ab25-7221a7ad53d1",
+        "name": "Json Record Reader",
+        "properties": {
+          "Max String Length": "20 MB",
+          "schema-application-strategy": "SELECTED_PART",
+          "schema-name": "${schema.name}",
+          "starting-field-strategy": "ROOT_NODE",
+          "schema-access-strategy": "schema-text-property",
+          "schema-text": "${avro.schema}",
+          "Allow Comments": "false"
+        },
+        "propertyDescriptors": {},
+        "scheduledState": "DISABLED",
+        "type": "org.apache.nifi.json.JsonTreeReader"
+      },
+      {
+        "bulletinLevel": "WARN",
+        "bundle": {
+          "artifact": "nifi-aws-nar",
+          "group": "org.apache.nifi",
+          "version": "2025.5.29.19"
+        },
+        "comments": "",
+        "componentType": "CONTROLLER_SERVICE",
+        "controllerServiceApis": [
+          {
+            "bundle": {
+              "artifact": "nifi-aws-service-api-nar",
+              "group": "org.apache.nifi",
+              "version": "2025.5.29.19"
+            },
+            "type": "org.apache.nifi.processors.aws.credentials.provider.service.AWSCredentialsProviderService"
+          },
+          {
+            "bundle": {
+              "artifact": "nifi-aws-service-api-nar",
+              "group": "org.apache.nifi",
+              "version": "2025.5.29.19"
+            },
+            "type": "org.apache.nifi.processors.aws.credentials.provider.AwsCredentialsProviderService"
+          }
+        ],
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "8de3b31b-0a70-3e01-a01c-4ed2fe3a4cbe",
+        "name": "AWS Credentials Provider",
+        "properties": {
+          "Access Key": "#{AWS Access Key ID}",
+          "default-credentials": "false",
+          "Session Time": "3600",
+          "assume-role-sts-signer-override": "Default Signature",
+          "assume-role-sts-region": "us-west-2",
+          "Secret Key": "#{AWS Secret Access Key}",
+          "anonymous-credentials": "false"
+        },
+        "propertyDescriptors": {},
+        "scheduledState": "DISABLED",
+        "type": "org.apache.nifi.processors.aws.credentials.provider.service.AWSCredentialsProviderControllerService"
+      },
+      {
+        "bulletinLevel": "WARN",
+        "bundle": {
+          "artifact": "nifi-csv-record-reader-nar",
+          "group": "org.apache.nifi",
+          "version": "2025.5.29.19"
+        },
+        "comments": "CSV Reader with schema inference",
+        "componentType": "CONTROLLER_SERVICE",
+        "controllerServiceApis": [
+          {
+            "bundle": {
+              "artifact": "nifi-standard-services-api-nar",
+              "group": "org.apache.nifi",
+              "version": "2025.5.29.19"
+            },
+            "type": "org.apache.nifi.serialization.RecordReaderFactory"
+          }
+        ],
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "b7c2a2a7-2f62-4e5e-8a88-1d95d0b1c001",
+        "name": "CSV Reader (Infer Schema)",
+        "properties": {
+          "Schema Access Strategy": "Infer Schema",
+          "CSV Format": "#{CSV Format}",
+          "Treat First Line as Header": "#{CSV First Line Header}"
+        },
+        "propertyDescriptors": {},
+        "scheduledState": "DISABLED",
+        "type": "org.apache.nifi.csv.CSVReader"
+      }
+    ],
+    "defaultBackPressureDataSizeThreshold": "1 GB",
+    "defaultBackPressureObjectThreshold": 10000,
+    "defaultFlowFileExpiration": "0 sec",
+    "executionEngine": "INHERITED",
+    "flowFileConcurrency": "UNBOUNDED",
+    "flowFileOutboundPolicy": "STREAM_WHEN_AVAILABLE",
+    "funnels": [],
+    "identifier": "flow-contents-group",
+    "inputPorts": [],
+    "labels": [
+      {
+        "componentType": "LABEL",
+        "groupIdentifier": "flow-contents-group",
+        "height": 102.0,
+        "identifier": "438da1ba-0196-1000-0dac-996c385c5eac",
+        "label": "Connector - CSV file stored in AWS S3 to Snowflake\n\nThis connector extracts data from a CSV file in S3 and loads it into Snowflake. It infers the schema from the CSV and creates/updates the destination table, then truncates and reloads it on each run.",
+        "position": {"x": -264.0, "y": -872.0},
+        "style": {"font-size": "12px"},
+        "width": 488.0,
+        "zIndex": 0
+      }
+    ],
+    "maxConcurrentTasks": 1,
+    "name": "CSV (S3 to Snowflake)",
+    "outputPorts": [],
+    "parameterContextName": "CSV (S3 to Snowflake) Ingestion Parameters",
+    "position": {"x": 0.0, "y": 0.0},
+    "processGroups": [
+      {
+        "comments": "Generate a separate flow file for each input file key.",
+        "componentType": "PROCESS_GROUP",
+        "connections": [
+          {
+            "backPressureDataSizeThreshold": "1 GB",
+            "backPressureObjectThreshold": 10000,
+            "bends": [],
+            "componentType": "CONNECTION",
+            "destination": {
+              "groupId": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+              "id": "e7e58367-eb56-30bb-8621-0ab55f4ca48c",
+              "name": "Output File",
+              "type": "OUTPUT_PORT"
+            },
+            "flowFileExpiration": "0 sec",
+            "groupIdentifier": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+            "identifier": "3c8a4bda-63f2-366f-9ab9-a23cadd9ef8b",
+            "labelIndex": 0,
+            "loadBalanceCompression": "DO_NOT_COMPRESS",
+            "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+            "name": "",
+            "partitioningAttribute": "",
+            "prioritizers": [],
+            "selectedRelationships": ["success"],
+            "source": {
+              "comments": "Assign a single input file to each flow file duplicate.",
+              "groupId": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+              "id": "4877dc63-0196-1000-ae88-2fc7650f9da5",
+              "name": "UpdateAttribute",
+              "type": "PROCESSOR"
+            },
+            "zIndex": 6
+          },
+          {
+            "backPressureDataSizeThreshold": "1 GB",
+            "backPressureObjectThreshold": 10000,
+            "bends": [],
+            "componentType": "CONNECTION",
+            "destination": {
+              "comments": "Add attribute with list of input files to initial flow file that triggered ingestion.",
+              "groupId": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+              "id": "4877dc60-0196-1000-77f3-86f7072395d6",
+              "name": "Add Attribute With Input Files",
+              "type": "PROCESSOR"
+            },
+            "flowFileExpiration": "0 sec",
+            "groupIdentifier": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+            "identifier": "3cec0c23-6f2d-3eb0-9dee-48f172d2e812",
+            "labelIndex": 0,
+            "loadBalanceCompression": "DO_NOT_COMPRESS",
+            "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+            "name": "",
+            "partitioningAttribute": "",
+            "prioritizers": [],
+            "selectedRelationships": [""],
+            "source": {
+              "groupId": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+              "id": "de9011f9-a14e-32e2-ba08-a0e34f3517bd",
+              "name": "Input File",
+              "type": "INPUT_PORT"
+            },
+            "zIndex": 7
+          },
+          {
+            "backPressureDataSizeThreshold": "1 GB",
+            "backPressureObjectThreshold": 10000,
+            "bends": [],
+            "componentType": "CONNECTION",
+            "destination": {
+              "comments": "Duplicate initial flow file to number of input files.",
+              "groupId": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+              "id": "4877dc62-0196-1000-8733-76523b8c79a5",
+              "name": "Duplicate Flow File",
+              "type": "PROCESSOR"
+            },
+            "flowFileExpiration": "0 sec",
+            "groupIdentifier": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+            "identifier": "4877dc65-0196-1000-e4d1-db928989d354",
+            "labelIndex": 0,
+            "loadBalanceCompression": "DO_NOT_COMPRESS",
+            "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+            "name": "",
+            "partitioningAttribute": "",
+            "prioritizers": [],
+            "selectedRelationships": ["success"],
+            "source": {
+              "comments": "Add attribute with list of input files to initial flow file that triggered ingestion.",
+              "groupId": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+              "id": "4877dc60-0196-1000-77f3-86f7072395d6",
+              "name": "Add Attribute With Input Files",
+              "type": "PROCESSOR"
+            },
+            "zIndex": 4
+          },
+          {
+            "backPressureDataSizeThreshold": "1 GB",
+            "backPressureObjectThreshold": 10000,
+            "bends": [],
+            "componentType": "CONNECTION",
+            "destination": {
+              "comments": "Assign a single input file to each flow file duplicate.",
+              "groupId": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+              "id": "4877dc63-0196-1000-ae88-2fc7650f9da5",
+              "name": "UpdateAttribute",
+              "type": "PROCESSOR"
+            },
+            "flowFileExpiration": "0 sec",
+            "groupIdentifier": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+            "identifier": "4877dc66-0196-1000-566a-e73b6199f4e3",
+            "labelIndex": 0,
+            "loadBalanceCompression": "DO_NOT_COMPRESS",
+            "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+            "name": "",
+            "partitioningAttribute": "",
+            "prioritizers": [],
+            "selectedRelationships": ["success"],
+            "source": {
+              "comments": "Duplicate initial flow file to number of input files.",
+              "groupId": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+              "id": "4877dc62-0196-1000-8733-76523b8c79a5",
+              "name": "Duplicate Flow File",
+              "type": "PROCESSOR"
+            },
+            "zIndex": 5
+          }
+        ],
+        "controllerServices": [],
+        "defaultBackPressureDataSizeThreshold": "1 GB",
+        "defaultBackPressureObjectThreshold": 10000,
+        "defaultFlowFileExpiration": "0 sec",
+        "executionEngine": "INHERITED",
+        "flowFileConcurrency": "UNBOUNDED",
+        "flowFileOutboundPolicy": "STREAM_WHEN_AVAILABLE",
+        "funnels": [],
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+        "inputPorts": [
+          {
+            "allowRemoteAccess": false,
+            "componentType": "INPUT_PORT",
+            "concurrentlySchedulableTaskCount": 1,
+            "groupIdentifier": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+            "identifier": "de9011f9-a14e-32e2-ba08-a0e34f3517bd",
+            "name": "Input File",
+            "portFunction": "STANDARD",
+            "position": {"x": 496.0, "y": -456.0},
+            "scheduledState": "ENABLED",
+            "type": "INPUT_PORT"
+          }
+        ],
+        "labels": [],
+        "maxConcurrentTasks": 1,
+        "name": "Split Input Files",
+        "outputPorts": [
+          {
+            "allowRemoteAccess": false,
+            "componentType": "OUTPUT_PORT",
+            "concurrentlySchedulableTaskCount": 1,
+            "groupIdentifier": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+            "identifier": "e7e58367-eb56-30bb-8621-0ab55f4ca48c",
+            "name": "Output File",
+            "portFunction": "STANDARD",
+            "position": {"x": 496.0, "y": 320.0},
+            "scheduledState": "ENABLED",
+            "type": "OUTPUT_PORT"
+          }
+        ],
+        "parameterContextName": "CSV (S3 to Snowflake) Ingestion Parameters",
+        "position": {"x": -200.0, "y": -496.0},
+        "processGroups": [],
+        "processors": [
+          {
+            "autoTerminatedRelationships": [],
+            "backoffMechanism": "PENALIZE_FLOWFILE",
+            "bulletinLevel": "WARN",
+            "bundle": {"artifact": "nifi-update-attribute-nar", "group": "org.apache.nifi", "version": "2025.5.29.19"},
+            "comments": "Add attribute with list of input files to initial flow file that triggered ingestion.",
+            "componentType": "PROCESSOR",
+            "concurrentlySchedulableTaskCount": 1,
+            "executionNode": "ALL",
+            "groupIdentifier": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+            "identifier": "4877dc60-0196-1000-77f3-86f7072395d6",
+            "maxBackoffPeriod": "10 mins",
+            "name": "Add Attribute With Input Files",
+            "penaltyDuration": "30 sec",
+            "position": {"x": 440.0, "y": -336.0},
+            "properties": {
+              "Store State": "Do not store state",
+              "canonical-value-lookup-cache-size": "100",
+              "files": "#{S3 Object Keys}"
+            },
+            "propertyDescriptors": {},
+            "retriedRelationships": [],
+            "retryCount": 10,
+            "runDurationMillis": 25,
+            "scheduledState": "ENABLED",
+            "schedulingPeriod": "0 sec",
+            "schedulingStrategy": "TIMER_DRIVEN",
+            "style": {},
+            "type": "org.apache.nifi.processors.attributes.UpdateAttribute",
+            "yieldDuration": "1 sec"
+          },
+          {
+            "autoTerminatedRelationships": [],
+            "backoffMechanism": "PENALIZE_FLOWFILE",
+            "bulletinLevel": "WARN",
+            "bundle": {"artifact": "nifi-standard-nar", "group": "org.apache.nifi", "version": "2025.5.29.19"},
+            "comments": "Duplicate initial flow file to number of input files.",
+            "componentType": "PROCESSOR",
+            "concurrentlySchedulableTaskCount": 1,
+            "executionNode": "ALL",
+            "groupIdentifier": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+            "identifier": "4877dc62-0196-1000-8733-76523b8c79a5",
+            "maxBackoffPeriod": "10 mins",
+            "name": "Duplicate Flow File",
+            "penaltyDuration": "30 sec",
+            "position": {"x": 440.0, "y": -120.0},
+            "properties": {
+              "Number of Copies": "${literal(${allDelineatedValues(\"${files}\", ","):count()}):minus(1)}"
+            },
+            "propertyDescriptors": {},
+            "retriedRelationships": [],
+            "retryCount": 10,
+            "runDurationMillis": 0,
+            "scheduledState": "ENABLED",
+            "schedulingPeriod": "0 sec",
+            "schedulingStrategy": "TIMER_DRIVEN",
+            "style": {},
+            "type": "org.apache.nifi.processors.standard.DuplicateFlowFile",
+            "yieldDuration": "1 sec"
+          },
+          {
+            "autoTerminatedRelationships": [],
+            "backoffMechanism": "PENALIZE_FLOWFILE",
+            "bulletinLevel": "WARN",
+            "bundle": {"artifact": "nifi-update-attribute-nar", "group": "org.apache.nifi", "version": "2025.5.29.19"},
+            "comments": "Assign a single input file to each flow file duplicate.",
+            "componentType": "PROCESSOR",
+            "concurrentlySchedulableTaskCount": 1,
+            "executionNode": "ALL",
+            "groupIdentifier": "4877dc5e-0196-1000-3624-0d1e16b0b7e4",
+            "identifier": "4877dc63-0196-1000-ae88-2fc7650f9da5",
+            "maxBackoffPeriod": "10 mins",
+            "name": "UpdateAttribute",
+            "penaltyDuration": "30 sec",
+            "position": {"x": 440.0, "y": 104.0},
+            "properties": {
+              "Store State": "Do not store state",
+              "canonical-value-lookup-cache-size": "100",
+              "object.key": "${files:getDelimitedField(${copy.index:plus(1)}):trim()}"
+            },
+            "propertyDescriptors": {},
+            "retriedRelationships": [],
+            "retryCount": 10,
+            "runDurationMillis": 25,
+            "scheduledState": "ENABLED",
+            "schedulingPeriod": "0 sec",
+            "schedulingStrategy": "TIMER_DRIVEN",
+            "style": {},
+            "type": "org.apache.nifi.processors.attributes.UpdateAttribute",
+            "yieldDuration": "1 sec"
+          }
+        ],
+        "remoteProcessGroups": [],
+        "scheduledState": "ENABLED",
+        "statelessFlowTimeout": "1 min"
+      },
+      {
+        "comments": "Convert CSV to JSON records using schema inference.",
+        "componentType": "PROCESS_GROUP",
+        "connections": [
+          {
+            "backPressureDataSizeThreshold": "1 GB",
+            "backPressureObjectThreshold": 10000,
+            "bends": [],
+            "componentType": "CONNECTION",
+            "destination": {
+              "groupId": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+              "id": "d1a6ee4e-8e50-4a96-9fd9-4696d9e8803a",
+              "name": "Parsed CSV Data",
+              "type": "OUTPUT_PORT"
+            },
+            "flowFileExpiration": "0 sec",
+            "groupIdentifier": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+            "identifier": "a3a5f3e1-2de3-4b63-8a1a-5d9fbb39e15a",
+            "labelIndex": 0,
+            "loadBalanceCompression": "DO_NOT_COMPRESS",
+            "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+            "name": "",
+            "partitioningAttribute": "",
+            "prioritizers": [],
+            "selectedRelationships": ["success"],
+            "source": {
+              "comments": "Convert CSV content to JSON records.",
+              "groupId": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+              "id": "2f3b4a2c-8c6a-4b3f-8b3e-7c0e8f2c1a2b",
+              "name": "Convert CSV to JSON",
+              "type": "PROCESSOR"
+            },
+            "zIndex": 10
+          },
+          {
+            "backPressureDataSizeThreshold": "1 GB",
+            "backPressureObjectThreshold": 10000,
+            "bends": [],
+            "componentType": "CONNECTION",
+            "destination": {
+              "comments": "Convert CSV content to JSON records.",
+              "groupId": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+              "id": "2f3b4a2c-8c6a-4b3f-8b3e-7c0e8f2c1a2b",
+              "name": "Convert CSV to JSON",
+              "type": "PROCESSOR"
+            },
+            "flowFileExpiration": "0 sec",
+            "groupIdentifier": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+            "identifier": "b3b2b9b1-0a9f-4a7c-b7fd-6c2d1f8a4d3e",
+            "labelIndex": 0,
+            "loadBalanceCompression": "DO_NOT_COMPRESS",
+            "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+            "name": "",
+            "partitioningAttribute": "",
+            "prioritizers": [],
+            "selectedRelationships": [""],
+            "source": {
+              "groupId": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+              "id": "a2c8e5f5-2f1e-4c47-9e2b-8a1c3d0b99a2",
+              "name": "CSV File",
+              "type": "INPUT_PORT"
+            },
+            "zIndex": 9
+          },
+          {
+            "backPressureDataSizeThreshold": "1 GB",
+            "backPressureObjectThreshold": 10000,
+            "bends": [],
+            "componentType": "CONNECTION",
+            "destination": {
+              "groupId": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+              "id": "f3b51a0b-9a7a-48a4-b34b-7b337d867a22",
+              "name": "Failure",
+              "type": "OUTPUT_PORT"
+            },
+            "flowFileExpiration": "0 sec",
+            "groupIdentifier": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+            "identifier": "c1d4f7a9-4a5c-4b9e-9b2a-1a2b3c4d5e6f",
+            "labelIndex": 0,
+            "loadBalanceCompression": "DO_NOT_COMPRESS",
+            "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+            "name": "",
+            "partitioningAttribute": "",
+            "prioritizers": [],
+            "selectedRelationships": ["failure"],
+            "source": {
+              "comments": "Convert CSV content to JSON records.",
+              "groupId": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+              "id": "2f3b4a2c-8c6a-4b3f-8b3e-7c0e8f2c1a2b",
+              "name": "Convert CSV to JSON",
+              "type": "PROCESSOR"
+            },
+            "zIndex": 11
+          }
+        ],
+        "controllerServices": [],
+        "defaultBackPressureDataSizeThreshold": "1 GB",
+        "defaultBackPressureObjectThreshold": 10000,
+        "defaultFlowFileExpiration": "0 sec",
+        "executionEngine": "INHERITED",
+        "flowFileConcurrency": "UNBOUNDED",
+        "flowFileOutboundPolicy": "STREAM_WHEN_AVAILABLE",
+        "funnels": [],
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+        "inputPorts": [
+          {
+            "allowRemoteAccess": false,
+            "componentType": "INPUT_PORT",
+            "concurrentlySchedulableTaskCount": 1,
+            "groupIdentifier": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+            "identifier": "a2c8e5f5-2f1e-4c47-9e2b-8a1c3d0b99a2",
+            "name": "CSV File",
+            "portFunction": "STANDARD",
+            "position": {"x": -120.0, "y": -272.0},
+            "scheduledState": "ENABLED",
+            "type": "INPUT_PORT"
+          }
+        ],
+        "labels": [],
+        "maxConcurrentTasks": 1,
+        "name": "Parse CSV File",
+        "outputPorts": [
+          {
+            "allowRemoteAccess": false,
+            "componentType": "OUTPUT_PORT",
+            "concurrentlySchedulableTaskCount": 1,
+            "groupIdentifier": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+            "identifier": "d1a6ee4e-8e50-4a96-9fd9-4696d9e8803a",
+            "name": "Parsed CSV Data",
+            "portFunction": "STANDARD",
+            "position": {"x": -120.0, "y": 200.0},
+            "scheduledState": "ENABLED",
+            "type": "OUTPUT_PORT"
+          },
+          {
+            "allowRemoteAccess": false,
+            "componentType": "OUTPUT_PORT",
+            "concurrentlySchedulableTaskCount": 1,
+            "groupIdentifier": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+            "identifier": "f3b51a0b-9a7a-48a4-b34b-7b337d867a22",
+            "name": "Failure",
+            "portFunction": "STANDARD",
+            "position": {"x": 320.0, "y": 200.0},
+            "scheduledState": "ENABLED",
+            "type": "OUTPUT_PORT"
+          }
+        ],
+        "parameterContextName": "CSV (S3 to Snowflake) Ingestion Parameters",
+        "position": {"x": -200.0, "y": 24.0},
+        "processGroups": [],
+        "processors": [
+          {
+            "autoTerminatedRelationships": [],
+            "backoffMechanism": "PENALIZE_FLOWFILE",
+            "bulletinLevel": "WARN",
+            "bundle": {"artifact": "nifi-standard-nar", "group": "org.apache.nifi", "version": "2025.5.29.19"},
+            "comments": "Convert CSV content to JSON records.",
+            "componentType": "PROCESSOR",
+            "concurrentlySchedulableTaskCount": 1,
+            "executionNode": "ALL",
+            "groupIdentifier": "3f7c6f9a-a1aa-4ab0-a5f5-7bf2b0e6c111",
+            "identifier": "2f3b4a2c-8c6a-4b3f-8b3e-7c0e8f2c1a2b",
+            "maxBackoffPeriod": "10 mins",
+            "name": "Convert CSV to JSON",
+            "penaltyDuration": "30 sec",
+            "position": {"x": -120.0, "y": -56.0},
+            "properties": {
+              "record-writer": "220ab423-abac-3fd1-b897-c00f95f97df8",
+              "record-reader": "b7c2a2a7-2f62-4e5e-8a88-1d95d0b1c001",
+              "include-zero-record-flowfiles": "true"
+            },
+            "propertyDescriptors": {},
+            "retriedRelationships": [],
+            "retryCount": 10,
+            "runDurationMillis": 0,
+            "scheduledState": "ENABLED",
+            "schedulingPeriod": "0 sec",
+            "schedulingStrategy": "TIMER_DRIVEN",
+            "style": {},
+            "type": "org.apache.nifi.processors.standard.ConvertRecord",
+            "yieldDuration": "1 sec"
+          }
+        ],
+        "remoteProcessGroups": [],
+        "scheduledState": "ENABLED",
+        "statelessFlowTimeout": "1 min"
+      },
+      {
+        "comments": "Write parsed CSV data to Snowflake.",
+        "componentType": "PROCESS_GROUP",
+        "connections": [
+          {
+            "backPressureDataSizeThreshold": "1 GB",
+            "backPressureObjectThreshold": 10000,
+            "bends": [],
+            "componentType": "CONNECTION",
+            "destination": {
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "f2c30aed-1f8c-39ef-822b-52b1e0f7cbd4",
+              "name": "Set Destination Table Name Attribute",
+              "type": "PROCESSOR"
+            },
+            "flowFileExpiration": "0 sec",
+            "groupIdentifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+            "identifier": "51b78f74-ac0e-3596-9e2c-23171dbefdb4",
+            "labelIndex": 0,
+            "loadBalanceCompression": "DO_NOT_COMPRESS",
+            "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+            "name": "",
+            "partitioningAttribute": "",
+            "prioritizers": [],
+            "selectedRelationships": [""],
+            "source": {
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "7c2d0f1b-0184-312d-8d80-c711e1469dc7",
+              "name": "CSV Data",
+              "type": "INPUT_PORT"
+            },
+            "zIndex": 33
+          },
+          {
+            "backPressureDataSizeThreshold": "1 GB",
+            "backPressureObjectThreshold": 10000,
+            "bends": [],
+            "componentType": "CONNECTION",
+            "destination": {
+              "comments": "Update table schema to match incoming JSON records.",
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "ee4cabc9-4630-3457-9394-f897e8d143cd",
+              "name": "Update Destination Table Schema",
+              "type": "PROCESSOR"
+            },
+            "flowFileExpiration": "0 sec",
+            "groupIdentifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+            "identifier": "6d21211d-5e77-398f-a1f5-3f9a2db27202",
+            "labelIndex": 0,
+            "loadBalanceCompression": "DO_NOT_COMPRESS",
+            "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+            "name": "",
+            "partitioningAttribute": "",
+            "prioritizers": [],
+            "selectedRelationships": ["success"],
+            "source": {
+              "comments": "Set attribute with destination table name.",
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "f2c30aed-1f8c-39ef-822b-52b1e0f7cbd4",
+              "name": "Set Destination Table Name Attribute",
+              "type": "PROCESSOR"
+            },
+            "zIndex": 53
+          },
+          {
+            "backPressureDataSizeThreshold": "1 GB",
+            "backPressureObjectThreshold": 10000,
+            "bends": [],
+            "componentType": "CONNECTION",
+            "destination": {
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "175a5b7c-0197-1000-b577-849f02ca4beb",
+              "name": "Truncate Destination Table",
+              "type": "PROCESSOR"
+            },
+            "flowFileExpiration": "0 sec",
+            "groupIdentifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+            "identifier": "6d1bf8ab-3660-3f0b-9aca-26ad26bdcdbe",
+            "labelIndex": 0,
+            "loadBalanceCompression": "DO_NOT_COMPRESS",
+            "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+            "name": "",
+            "partitioningAttribute": "",
+            "prioritizers": [],
+            "selectedRelationships": ["success"],
+            "source": {
+              "comments": "Update table schema to match incoming JSON records.",
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "ee4cabc9-4630-3457-9394-f897e8d143cd",
+              "name": "Update Destination Table Schema",
+              "type": "PROCESSOR"
+            },
+            "zIndex": 54
+          },
+          {
+            "backPressureDataSizeThreshold": "1 GB",
+            "backPressureObjectThreshold": 10000,
+            "bends": [],
+            "componentType": "CONNECTION",
+            "destination": {
+              "comments": "Insert JSON records into destination table.",
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "175a3d50-0197-1000-e76a-847551ef372d",
+              "name": "Insert Data To Table",
+              "type": "PROCESSOR"
+            },
+            "flowFileExpiration": "0 sec",
+            "groupIdentifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+            "identifier": "69cb33c7-0cae-371f-8fdd-f4f6c9e5fa2a",
+            "labelIndex": 0,
+            "loadBalanceCompression": "DO_NOT_COMPRESS",
+            "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+            "name": "",
+            "partitioningAttribute": "",
+            "prioritizers": [],
+            "selectedRelationships": ["success"],
+            "source": {
+              "comments": "Truncate destination table before loading new data.",
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "175a5b7c-0197-1000-b577-849f02ca4beb",
+              "name": "Truncate Destination Table",
+              "type": "PROCESSOR"
+            },
+            "zIndex": 55
+          },
+          {
+            "backPressureDataSizeThreshold": "1 GB",
+            "backPressureObjectThreshold": 10000,
+            "bends": [],
+            "componentType": "CONNECTION",
+            "destination": {
+              "comments": "Create or replace table if alter not possible or table missing.",
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "91e9acca-cd04-3847-85f4-d1b64a2d1c63",
+              "name": "Create Or Replace Destination Table",
+              "type": "PROCESSOR"
+            },
+            "flowFileExpiration": "0 sec",
+            "groupIdentifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+            "identifier": "5a00e51d-a721-32f1-a886-08adee115625",
+            "labelIndex": 0,
+            "loadBalanceCompression": "DO_NOT_COMPRESS",
+            "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+            "name": "",
+            "partitioningAttribute": "",
+            "prioritizers": [],
+            "selectedRelationships": ["illegal alteration", "object not found"],
+            "source": {
+              "comments": "Update table schema to match incoming JSON records.",
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "ee4cabc9-4630-3457-9394-f897e8d143cd",
+              "name": "Update Destination Table Schema",
+              "type": "PROCESSOR"
+            },
+            "zIndex": 56
+          },
+          {
+            "backPressureDataSizeThreshold": "1 GB",
+            "backPressureObjectThreshold": 10000,
+            "bends": [],
+            "componentType": "CONNECTION",
+            "destination": {
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "64279d5e-68ce-3c1f-8859-a1eaf8bcda98",
+              "name": "Failure",
+              "type": "OUTPUT_PORT"
+            },
+            "flowFileExpiration": "0 sec",
+            "groupIdentifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+            "identifier": "c895968b-b815-3c06-abf3-c825991fbafa",
+            "labelIndex": 0,
+            "loadBalanceCompression": "DO_NOT_COMPRESS",
+            "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+            "name": "",
+            "partitioningAttribute": "",
+            "prioritizers": [],
+            "selectedRelationships": ["failure"],
+            "source": {
+              "comments": "Update table schema to match incoming JSON records.",
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "ee4cabc9-4630-3457-9394-f897e8d143cd",
+              "name": "Update Destination Table Schema",
+              "type": "PROCESSOR"
+            },
+            "zIndex": 60
+          },
+          {
+            "backPressureDataSizeThreshold": "1 GB",
+            "backPressureObjectThreshold": 10000,
+            "bends": [],
+            "componentType": "CONNECTION",
+            "destination": {
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "64279d5e-68ce-3c1f-8859-a1eaf8bcda98",
+              "name": "Failure",
+              "type": "OUTPUT_PORT"
+            },
+            "flowFileExpiration": "0 sec",
+            "groupIdentifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+            "identifier": "7990a166-b3c3-3322-9ad1-581d457bc04f",
+            "labelIndex": 0,
+            "loadBalanceCompression": "DO_NOT_COMPRESS",
+            "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+            "name": "",
+            "partitioningAttribute": "",
+            "prioritizers": [],
+            "selectedRelationships": ["failure"],
+            "source": {
+              "comments": "",
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "91e9acca-cd04-3847-85f4-d1b64a2d1c63",
+              "name": "Create Or Replace Destination Table",
+              "type": "PROCESSOR"
+            },
+            "zIndex": 61
+          },
+          {
+            "backPressureDataSizeThreshold": "1 GB",
+            "backPressureObjectThreshold": 10000,
+            "bends": [],
+            "componentType": "CONNECTION",
+            "destination": {
+              "comments": "Insert JSON records into destination table.",
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "175a3d50-0197-1000-e76a-847551ef372d",
+              "name": "Insert Data To Table",
+              "type": "PROCESSOR"
+            },
+            "flowFileExpiration": "0 sec",
+            "groupIdentifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+            "identifier": "a50855e6-4cee-3758-bb3c-6d4029dd496d",
+            "labelIndex": 0,
+            "loadBalanceCompression": "DO_NOT_COMPRESS",
+            "loadBalanceStrategy": "DO_NOT_LOAD_BALANCE",
+            "name": "",
+            "partitioningAttribute": "",
+            "prioritizers": [],
+            "selectedRelationships": ["success"],
+            "source": {
+              "comments": "",
+              "groupId": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+              "id": "91e9acca-cd04-3847-85f4-d1b64a2d1c63",
+              "name": "Create Or Replace Destination Table",
+              "type": "PROCESSOR"
+            },
+            "zIndex": 57
+          }
+        ],
+        "controllerServices": [],
+        "defaultBackPressureDataSizeThreshold": "1 GB",
+        "defaultBackPressureObjectThreshold": 10000,
+        "defaultFlowFileExpiration": "0 sec",
+        "executionEngine": "INHERITED",
+        "flowFileConcurrency": "UNBOUNDED",
+        "flowFileOutboundPolicy": "STREAM_WHEN_AVAILABLE",
+        "funnels": [],
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+        "inputPorts": [
+          {
+            "allowRemoteAccess": false,
+            "componentType": "INPUT_PORT",
+            "concurrentlySchedulableTaskCount": 1,
+            "groupIdentifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+            "identifier": "7c2d0f1b-0184-312d-8d80-c711e1469dc7",
+            "name": "CSV Data",
+            "portFunction": "STANDARD",
+            "position": {"x": -144.0, "y": 752.0},
+            "scheduledState": "ENABLED",
+            "type": "INPUT_PORT"
+          }
+        ],
+        "labels": [],
+        "maxConcurrentTasks": 1,
+        "name": "Write CSV File",
+        "outputPorts": [
+          {
+            "allowRemoteAccess": false,
+            "componentType": "OUTPUT_PORT",
+            "concurrentlySchedulableTaskCount": 1,
+            "groupIdentifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+            "identifier": "64279d5e-68ce-3c1f-8859-a1eaf8bcda98",
+            "name": "Failure",
+            "portFunction": "STANDARD",
+            "position": {"x": 456.0, "y": 1344.0},
+            "scheduledState": "ENABLED",
+            "type": "OUTPUT_PORT"
+          }
+        ],
+        "parameterContextName": "CSV (S3 to Snowflake) Ingestion Parameters",
+        "position": {"x": -200.0, "y": 336.0},
+        "processGroups": [],
+        "processors": [
+          {
+            "autoTerminatedRelationships": ["success"],
+            "backoffMechanism": "PENALIZE_FLOWFILE",
+            "bulletinLevel": "WARN",
+            "bundle": {"artifact": "runtime-snowflake-processors-nar", "group": "com.snowflake.openflow.runtime", "version": "2025.5.29.19"},
+            "comments": "Insert JSON records to destination table.",
+            "componentType": "PROCESSOR",
+            "concurrentlySchedulableTaskCount": 1,
+            "executionNode": "ALL",
+            "groupIdentifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+            "identifier": "175a3d50-0197-1000-e76a-847551ef372d",
+            "maxBackoffPeriod": "10 mins",
+            "name": "Insert Data To Table",
+            "penaltyDuration": "30 sec",
+            "position": {"x": -200.0, "y": 1512.0},
+            "properties": {
+              "Account": "#{Snowflake Account Identifier}",
+              "User": "#{Snowflake Username}",
+              "Table": "\"${table.name}\"",
+              "Max Batch Size": "10000",
+              "Schema": "#{Destination Schema}",
+              "Max Tasks Per Group": "1",
+              "Record Reader": "81f35f8e-cc4a-36e0-ab25-7221a7ad53d1",
+              "Iceberg Enabled": "false",
+              "Private Key Service": "3551017f-aabe-33e3-a20d-c9ec6bb22f98",
+              "Connection Strategy": "STANDARD",
+              "Role": "#{Snowflake Role}",
+              "Snowpipe Channel Prefix": "${hostname(false)}_${avro.schema:hash('SHA-256')}",
+              "Client Lag": "1 sec",
+              "Authentication Strategy": "KEY_PAIR",
+              "Delivery Guarantee": "At least once",
+              "Database": "#{Destination Database}"
+            },
+            "propertyDescriptors": {},
+            "retriedRelationships": [],
+            "retryCount": 10,
+            "runDurationMillis": 0,
+            "scheduledState": "ENABLED",
+            "schedulingPeriod": "0 sec",
+            "schedulingStrategy": "TIMER_DRIVEN",
+            "style": {},
+            "type": "com.snowflake.openflow.runtime.processors.snowpipe.PutSnowpipeStreaming",
+            "yieldDuration": "1 sec"
+          },
+          {
+            "autoTerminatedRelationships": [],
+            "backoffMechanism": "PENALIZE_FLOWFILE",
+            "bulletinLevel": "WARN",
+            "bundle": {"artifact": "nifi-standard-nar", "group": "org.apache.nifi", "version": "2025.5.29.19"},
+            "comments": "Truncate destination table before loading new data.",
+            "componentType": "PROCESSOR",
+            "concurrentlySchedulableTaskCount": 1,
+            "executionNode": "ALL",
+            "groupIdentifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+            "identifier": "175a5b7c-0197-1000-b577-849f02ca4beb",
+            "maxBackoffPeriod": "10 mins",
+            "name": "Truncate Destination Table",
+            "penaltyDuration": "30 sec",
+            "position": {"x": -200.0, "y": 1304.0},
+            "properties": {
+              "esql-max-rows": "0",
+              "dbf-default-precision": "10",
+              "Max Wait Time": "0 seconds",
+              "SQL Query": "TRUNCATE TABLE \"${table.name}\"",
+              "Database Connection Pooling Service": "1c249b1a-3267-3930-b7b9-fffa14a09538",
+              "esql-auto-commit": "true",
+              "dbf-user-logical-types": "false",
+              "dbf-default-scale": "0",
+              "compression-format": "NONE",
+              "esql-output-batch-size": "0",
+              "esql-fetch-size": "0",
+              "dbf-normalize": "false",
+              "Content Output Strategy": "ORIGINAL"
+            },
+            "propertyDescriptors": {},
+            "retriedRelationships": [],
+            "retryCount": 10,
+            "runDurationMillis": 0,
+            "scheduledState": "ENABLED",
+            "schedulingPeriod": "0 sec",
+            "schedulingStrategy": "TIMER_DRIVEN",
+            "style": {},
+            "type": "org.apache.nifi.processors.standard.ExecuteSQL",
+            "yieldDuration": "1 sec"
+          },
+          {
+            "autoTerminatedRelationships": [],
+            "backoffMechanism": "PENALIZE_FLOWFILE",
+            "bulletinLevel": "WARN",
+            "bundle": {"artifact": "runtime-snowflake-processors-nar", "group": "com.snowflake.openflow.runtime", "version": "2025.5.29.19"},
+            "comments": "Create or replace destination table based on incoming JSON schema.",
+            "componentType": "PROCESSOR",
+            "concurrentlySchedulableTaskCount": 1,
+            "executionNode": "ALL",
+            "groupIdentifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+            "identifier": "91e9acca-cd04-3847-85f4-d1b64a2d1c63",
+            "maxBackoffPeriod": "10 mins",
+            "name": "Create Or Replace Destination Table",
+            "penaltyDuration": "30 sec",
+            "position": {"x": -656.0, "y": 1304.0},
+            "properties": {
+              "Table Name": "${table.name}",
+              "Table Metadata Cache Expiration Time": "30 sec",
+              "Update Type": "Create or Replace Table",
+              "Max Batch Size": "1",
+              "Include Not Null Constraints": "true",
+              "Table Stream Creation Parameters": "",
+              "Record Reader": "81f35f8e-cc4a-36e0-ab25-7221a7ad53d1",
+              "Table Schema Strategy": "Use Record Reader",
+              "Schema Name": "#{Destination Schema}",
+              "Add Column Strategy": "Alter Table",
+              "Use Table Metadata Cache": "false",
+              "Column Removal Strategy": "Drop Column",
+              "Drop Not Null Strategy": "Alter Table",
+              "Add Not Null Strategy": "Alter Table",
+              "Create Stream": "false",
+              "Modify Primary Key Strategy": "Alter Table",
+              "Drop Column Strategy": "Alter Table",
+              "Connection Pool": "1c249b1a-3267-3930-b7b9-fffa14a09538",
+              "Include Primary Key Constraints": "true"
+            },
+            "propertyDescriptors": {},
+            "retriedRelationships": [],
+            "retryCount": 10,
+            "runDurationMillis": 0,
+            "scheduledState": "ENABLED",
+            "schedulingPeriod": "0 sec",
+            "schedulingStrategy": "TIMER_DRIVEN",
+            "style": {},
+            "type": "com.snowflake.openflow.runtime.processors.snowflake.UpdateSnowflakeDatabase",
+            "yieldDuration": "1 sec"
+          },
+          {
+            "autoTerminatedRelationships": [],
+            "backoffMechanism": "PENALIZE_FLOWFILE",
+            "bulletinLevel": "WARN",
+            "bundle": {"artifact": "runtime-snowflake-processors-nar", "group": "com.snowflake.openflow.runtime", "version": "2025.5.29.19"},
+            "comments": "Alter destination table schema to match incoming JSON records.",
+            "componentType": "PROCESSOR",
+            "concurrentlySchedulableTaskCount": 1,
+            "executionNode": "ALL",
+            "groupIdentifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+            "identifier": "ee4cabc9-4630-3457-9394-f897e8d143cd",
+            "maxBackoffPeriod": "10 mins",
+            "name": "Update Destination Table Schema",
+            "penaltyDuration": "30 sec",
+            "position": {"x": -200.0, "y": 1088.0},
+            "properties": {
+              "Table Name": "${table.name}",
+              "Table Metadata Cache Expiration Time": "30 sec",
+              "Update Type": "Alter Table",
+              "Max Batch Size": "1",
+              "Include Not Null Constraints": "true",
+              "Table Stream Creation Parameters": "",
+              "Record Reader": "81f35f8e-cc4a-36e0-ab25-7221a7ad53d1",
+              "Table Schema Strategy": "Use Record Reader",
+              "Schema Name": "#{Destination Schema}",
+              "Add Column Strategy": "Alter Table",
+              "Use Table Metadata Cache": "false",
+              "Column Removal Strategy": "Drop Column",
+              "Drop Not Null Strategy": "Alter Table",
+              "Add Not Null Strategy": "Alter Table",
+              "Create Stream": "false",
+              "Modify Primary Key Strategy": "Alter Table",
+              "Drop Column Strategy": "Alter Table",
+              "Connection Pool": "1c249b1a-3267-3930-b7b9-fffa14a09538",
+              "Include Primary Key Constraints": "true"
+            },
+            "propertyDescriptors": {},
+            "retriedRelationships": [],
+            "retryCount": 10,
+            "runDurationMillis": 0,
+            "scheduledState": "ENABLED",
+            "schedulingPeriod": "0 sec",
+            "schedulingStrategy": "TIMER_DRIVEN",
+            "style": {},
+            "type": "com.snowflake.openflow.runtime.processors.snowflake.UpdateSnowflakeDatabase",
+            "yieldDuration": "1 sec"
+          },
+          {
+            "autoTerminatedRelationships": [],
+            "backoffMechanism": "PENALIZE_FLOWFILE",
+            "bulletinLevel": "WARN",
+            "bundle": {"artifact": "nifi-update-attribute-nar", "group": "org.apache.nifi", "version": "2025.5.29.19"},
+            "comments": "Set attribute with name of the destination table.",
+            "componentType": "PROCESSOR",
+            "concurrentlySchedulableTaskCount": 1,
+            "executionNode": "ALL",
+            "groupIdentifier": "e8eaa52a-ab6c-3235-bd60-01a654981858",
+            "identifier": "f2c30aed-1f8c-39ef-822b-52b1e0f7cbd4",
+            "maxBackoffPeriod": "10 mins",
+            "name": "Set Destination Table Name Attribute",
+            "penaltyDuration": "30 sec",
+            "position": {"x": -200.0, "y": 864.0},
+            "properties": {
+              "Store State": "Do not store state",
+              "canonical-value-lookup-cache-size": "100",
+              "table.name": "#{Destination Table Prefix}${object.key:substringAfterLast('/'):replaceAll('\\.[^.]*$',''):replaceAll('[^A-Za-z0-9_]','_')}"
+            },
+            "propertyDescriptors": {},
+            "retriedRelationships": [],
+            "retryCount": 10,
+            "runDurationMillis": 25,
+            "scheduledState": "ENABLED",
+            "schedulingPeriod": "0 sec",
+            "schedulingStrategy": "TIMER_DRIVEN",
+            "style": {},
+            "type": "org.apache.nifi.processors.attributes.UpdateAttribute",
+            "yieldDuration": "1 sec"
+          }
+        ],
+        "remoteProcessGroups": [],
+        "scheduledState": "ENABLED",
+        "statelessFlowTimeout": "1 min"
+      }
+    ],
+    "processors": [
+      {
+        "autoTerminatedRelationships": ["success"],
+        "backoffMechanism": "PENALIZE_FLOWFILE",
+        "bulletinLevel": "WARN",
+        "bundle": {"artifact": "nifi-standard-nar", "group": "org.apache.nifi", "version": "2025.5.29.19"},
+        "comments": "",
+        "componentType": "PROCESSOR",
+        "concurrentlySchedulableTaskCount": 1,
+        "executionNode": "ALL",
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "08c85e12-089e-359d-a6a3-dc7266d84e55",
+        "maxBackoffPeriod": "10 mins",
+        "name": "Log Failure",
+        "penaltyDuration": "30 sec",
+        "position": {"x": 568.0, "y": 48.0},
+        "properties": {
+          "character-set": "UTF-8",
+          "Log FlowFile Properties": "true",
+          "Log Level": "error",
+          "attributes-to-log-regex": ".*",
+          "Output Format": "Line per Attribute",
+          "Log Payload": "false"
+        },
+        "propertyDescriptors": {},
+        "retriedRelationships": [],
+        "retryCount": 10,
+        "runDurationMillis": 25,
+        "scheduledState": "ENABLED",
+        "schedulingPeriod": "0 sec",
+        "schedulingStrategy": "TIMER_DRIVEN",
+        "style": {},
+        "type": "org.apache.nifi.processors.standard.LogAttribute",
+        "yieldDuration": "1 sec"
+      },
+      {
+        "autoTerminatedRelationships": [],
+        "backoffMechanism": "PENALIZE_FLOWFILE",
+        "bulletinLevel": "WARN",
+        "bundle": {"artifact": "nifi-aws-nar", "group": "org.apache.nifi", "version": "2025.5.29.19"},
+        "comments": "Fetch CSV file from AWS S3 bucket.",
+        "componentType": "PROCESSOR",
+        "concurrentlySchedulableTaskCount": 1,
+        "executionNode": "ALL",
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "77df7ee1-9a4b-3485-a99a-52a7b1b05a5b",
+        "maxBackoffPeriod": "10 mins",
+        "name": "Fetch File From S3",
+        "penaltyDuration": "30 sec",
+        "position": {"x": -184.0, "y": -216.0},
+        "properties": {
+          "requester-pays": "false",
+          "Object Key": "${object.key}",
+          "AWS Credentials Provider service": "8de3b31b-0a70-3e01-a01c-4ed2fe3a4cbe",
+          "Signer Override": "Default Signature",
+          "Bucket": "#{S3 Bucket}",
+          "Communications Timeout": "30 secs",
+          "Region": "#{AWS Region}"
+        },
+        "propertyDescriptors": {},
+        "retriedRelationships": [],
+        "retryCount": 10,
+        "runDurationMillis": 0,
+        "scheduledState": "ENABLED",
+        "schedulingPeriod": "0 sec",
+        "schedulingStrategy": "TIMER_DRIVEN",
+        "style": {},
+        "type": "org.apache.nifi.processors.aws.s3.FetchS3Object",
+        "yieldDuration": "1 sec"
+      },
+      {
+        "autoTerminatedRelationships": [],
+        "backoffMechanism": "PENALIZE_FLOWFILE",
+        "bulletinLevel": "WARN",
+        "bundle": {"artifact": "nifi-standard-nar", "group": "org.apache.nifi", "version": "2025.5.29.19"},
+        "comments": "Generate flow file telling that data should be ingested. The file is generated based on configured schedule.",
+        "componentType": "PROCESSOR",
+        "concurrentlySchedulableTaskCount": 1,
+        "executionNode": "PRIMARY",
+        "groupIdentifier": "flow-contents-group",
+        "identifier": "7d999c3f-6d93-3f0f-9b67-ae43990fab37",
+        "maxBackoffPeriod": "10 mins",
+        "name": "Start Scheduled Ingestion",
+        "penaltyDuration": "30 sec",
+        "position": {"x": -184.0, "y": -712.0},
+        "properties": {
+          "character-set": "UTF-8",
+          "File Size": "0B",
+          "Batch Size": "1",
+          "Unique FlowFiles": "false",
+          "Data Format": "Text"
+        },
+        "propertyDescriptors": {},
+        "retriedRelationships": [],
+        "retryCount": 10,
+        "runDurationMillis": 0,
+        "scheduledState": "ENABLED",
+        "schedulingPeriod": "#{Schedule}",
+        "schedulingStrategy": "TIMER_DRIVEN",
+        "style": {},
+        "type": "org.apache.nifi.processors.standard.GenerateFlowFile",
+        "yieldDuration": "1 sec"
+      }
+    ],
+    "remoteProcessGroups": [],
+    "scheduledState": "ENABLED",
+    "statelessFlowTimeout": "1 min"
+  },
+  "flowEncodingVersion": "1.0",
+  "latest": false,
+  "parameterContexts": {
+    "CSV (S3 to Snowflake) Source Parameters": {
+      "componentType": "PARAMETER_CONTEXT",
+      "inheritedParameterContexts": [],
+      "name": "CSV (S3 to Snowflake) Source Parameters",
+      "parameters": [
+        {"description": "Access Key ID for AWS user that is used to fetch CSV file.", "name": "AWS Access Key ID", "provided": false, "sensitive": true},
+        {"description": "AWS region where the S3 bucket resides.", "name": "AWS Region", "provided": false, "sensitive": false},
+        {"description": "Secret Access Key for AWS user that is used to fetch CSV file.", "name": "AWS Secret Access Key", "provided": false, "sensitive": true}
+      ]
+    },
+    "CSV (S3 to Snowflake) Destination Parameters": {
+      "componentType": "PARAMETER_CONTEXT",
+      "inheritedParameterContexts": [],
+      "name": "CSV (S3 to Snowflake) Destination Parameters",
+      "parameters": [
+        {"description": "The database where data retrieved from CSV file will be persisted. It must already exist in Snowflake.", "name": "Destination Database", "provided": false, "sensitive": false},
+        {"description": "The schema where data retrieved from CSV file will be persisted. It must already exist in Snowflake.", "name": "Destination Schema", "provided": false, "sensitive": false},
+        {"description": "Leave this blank when using Session Token for your Authentication Strategy. When using KEY_PAIR, provide your Snowflake account name formatted as [organization-name]-[account-name] where data will be persisted.", "name": "Snowflake Account Identifier", "provided": false, "sensitive": false},
+        {"description": "Leave this blank when using Session Token for your Authentication Strategy. When using KEY_PAIR, provide the RSA private key used for authentication. The RSA key must be formatted according to PKCS8 standards and have standard PEM headers and footers.", "name": "Snowflake Private Key", "provided": false, "sensitive": true},
+        {"description": "Leave this blank when using Session Token for your Authentication Strategy. When using KEY_PAIR, provide the password associated with the Snowflake Private Key File.", "name": "Snowflake Private Key Password", "provided": false, "sensitive": true},
+        {"description": "When using Session Token for your Authentication Strategy, use your Runtime Role. When using Key Pair for your Authentication Strategy, use a valid role configured for your service user.", "name": "Snowflake Role", "provided": false, "sensitive": false},
+        {"description": "Leave this blank when using Session Token for your Authentication Strategy. When using KEY_PAIR, provide the user name used to connect to Snowflake instance.", "name": "Snowflake Username", "provided": false, "sensitive": false},
+        {"description": "Snowflake warehouse used to run queries when inserting data into the destination table.", "name": "Snowflake Warehouse", "provided": false, "sensitive": false}
+      ]
+    },
+    "CSV (S3 to Snowflake) Ingestion Parameters": {
+      "componentType": "PARAMETER_CONTEXT",
+      "inheritedParameterContexts": ["CSV (S3 to Snowflake) Destination Parameters", "CSV (S3 to Snowflake) Source Parameters"],
+      "name": "CSV (S3 to Snowflake) Ingestion Parameters",
+      "parameters": [
+        {"description": "The prefix of the table in the destination schema where CSV data will be persisted.", "name": "Destination Table Prefix", "provided": false, "sensitive": false},
+        {"description": "The S3 bucket from which the CSV files should be fetched.", "name": "S3 Bucket", "provided": false, "sensitive": false},
+        {"description": "List of comma-separated object keys within the S3 bucket that contain CSV files to fetch, e.g. \"file1.csv,file2.csv\".", "name": "S3 Object Keys", "provided": false, "sensitive": false},
+        {"description": "Schedule for the connector ingestion.", "name": "Schedule", "provided": false, "sensitive": false, "value": "1 day"},
+        {"description": "CSV format to parse (e.g., RFC_4180, DEFAULT).", "name": "CSV Format", "provided": false, "sensitive": false, "value": "RFC_4180"},
+        {"description": "Whether the first line of the CSV contains header names.", "name": "CSV First Line Header", "provided": false, "sensitive": false, "value": "true"}
+      ]
+    }
+  },
+  "parameterProviders": {},
+  "snapshotMetadata": {
+    "author": "auto-generated",
+    "flowIdentifier": "csv-s3-connector",
+    "timestamp": 1754669364000
+  }
+}
